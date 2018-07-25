@@ -1,0 +1,14 @@
+
+public class Person {
+  //Represents the game characters
+  //Contains name and the starting location of the person
+  String name;
+  Location startinglocation;
+  public Person(String name, int x, int y) {
+	  this.name = name;
+	  startinglocation = new Location(x, y);
+  }
+  
+  public String getName() {return this.name;}
+  public Location getStart() {return this.startinglocation;}
+}
