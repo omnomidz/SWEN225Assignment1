@@ -1,6 +1,6 @@
 
 class Weapon {
-  //Represents the weapons in the game
+  //Represents the weapons in the game and information about them
   String name;
   Location location;
   public Weapon(String name) {this.name = name;}
