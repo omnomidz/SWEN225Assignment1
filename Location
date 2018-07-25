@@ -1,0 +1,28 @@
+
+class Location {
+  //Represents the individual locations on the board
+  //Contains information about what kinds of objects might be on/contain the location
+  int x;
+  int y;
+  Weapon weapon = null;
+  Person person = null;
+  Room room = null;
+  Player player = null;
+  
+  public Location(int x, int y) {
+	  this.x = x;
+	  this.y = y;
+  }
+  //required getters and setters
+  
+  public int getX() {return this.x;}
+  public int getY() {return this.y;}
+  public Weapon getWeapon(){return this.weapon;}
+  public void setWeapon(Weapon w) {this.weapon = w;}
+  public Person getPerson() {return this.person;}
+  public void setPerson(Person p) {this.person = p;}
+  public Room getRoom() {return this.room;}
+  public void setRoom(Room r) {this.room = r;}
+  public Player getPlayer() {return this.player;}
+  public void setPlayer(Player p) {this.player = p;}
+}
