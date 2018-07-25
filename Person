@@ -6,7 +6,8 @@ public class Person {
   Location startinglocation;
   public Person(String name, int x, int y) {
 	  this.name = name;
-	  startinglocation = new Location(x, y);
+	  //must implement board for this part
+	  startinglocation = board.getLocation(x,y);
   }
   
   public String getName() {return this.name;}
