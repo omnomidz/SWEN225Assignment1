@@ -1,0 +1,16 @@
+
+import java.util.ArrayList;
+
+public class Room {
+  //Represents the different rooms on the board
+  //Contains name and a list of the locations that sit within 
+  String name;
+  ArrayList<Location> locations = new ArrayList<Location>();
+  public Room(String name, ArrayList<Location> locations) {
+	  this.name = name;
+	  this.locations = locations;
+  }
+  
+  public String getName() {return this.name;}
+  public ArrayList<Location> getLocations(){return locations;}
+}
