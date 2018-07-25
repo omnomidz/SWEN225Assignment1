@@ -1,0 +1,17 @@
+import java.util.ArrayList;
+
+public class Player {
+  //Represents the players playing the game
+  //Contains the location, character they are playing and list of cards they know of
+  Location location;
+  Person person;
+  ArrayList<Card> cards = new ArrayList<Card>();
+  public Player() {}
+
+  public String[] makeSuggestion() {}
+  public String[] makeAccusation() {}
+
+  public void moveNorth(int distance) {location = board.getLocation(location.x, location.y - distance);}
+  public void moveSouth(int distance) {location = board.getLocation(location.x, location.y + distance);}
+  public void moveEast(int distance) {location = board.getLocation(location.x + distance, location.y);}
+  public void moveWest(int distance) {location = board.getLocation(location.x - distance, location.y);}
