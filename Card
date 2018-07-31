@@ -1,0 +1,40 @@
+public class Card {
+
+	private boolean murder;
+	private String name;
+	private String type;
+	
+	public Card(String aName, String aType, Game aGame, Player aPlayer){
+		murder = false;
+		name = aName;
+		type = aType;
+		boolean didAddGame = setGame(aGame);
+		if (!didAddGame){
+			throw new RuntimeException("Unable to create card due to game");
+		}
+		boolean didAddPlayer = setPlayer(aPlayer);
+		if (!didAddPlayer){
+			throw new RuntimeException("Unable to create card due to player");
+		}
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public void setMurder(boolean murder) {
+		this.murder = murder;
+	}
+}
