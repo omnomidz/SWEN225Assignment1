@@ -1,0 +1,108 @@
+import java.util.List;
+
+public class Board {
+  private Location[][] board;
+  public Board(List<Room> rooms) {
+	 //initilising all the locations on the board, as well as any values those loactions might have
+	 for(int i = 0; i < 24; i++) {
+		 for(int j = 0; j< 25; j++) {
+			 board[i][j] = new Location(i,j);
+		 }
+	 }
+	 //Kitchen
+	 for(int i = 1; i<7; i++) {
+		 for(int j = 0; j<6; j++) {
+			 board[i][j].setRoom(rooms.get(0));
+		 }
+	 }
+	 //Ballroom
+	 for(int i = 2; i<8; i++) {
+		 for(int j = 8; j<16;j++) {
+			 board[i][j].setRoom(rooms.get(1));
+		 }
+	 }
+	 for(int j = 10; j<14; j++) {
+		 board[2][j].setRoom(rooms.get(1));
+	 }
+	 //Conservatory
+	 for(int i = 1; i<6; i++) {
+		 for(int j = 18; j<24; j++) {
+			 board[i][j].setRoom(rooms.get(2));
+		 }
+	 }
+	 board[5][18].setRoom(null);
+	 //Billiard
+	 for(int i = 8; i<13; i++) {
+		 for(int j = 18; j<24; j++) {
+			 board[i][j].setRoom(rooms.get(3));
+		 }
+	 }
+	 //Library
+	 for(int i = 14; i<19; i++) {
+		 for(int j = 17; j<24;  j++) {
+			 board[i][j].setRoom(rooms.get(4));
+		 }
+	 }
+	 board[14][17].setRoom(null);
+	 board[18][17].setRoom(null);
+	 //Study
+	 for(int i = 21; i<25;i++) {
+		 for(int j = 17; j<24; j++) {
+			 board[i][j].setRoom(rooms.get(5));
+		 }
+	 }
+	 //Hall
+	 for(int i = 18; i<25; i++) {
+		 for(int j = 9; j<15; j++) {
+			 board[i][j].setRoom(rooms.get(6));
+		 }
+	 }
+	 //Lounge
+	 for(int i = 19; i<25; i++) {
+		 for(int j = 0; j<7; j++) {
+			 board[i][j].setRoom(rooms.get(7));
+		 }
+	 }
+	 //Dining Room
+	 for(int i = 9; i<16; i++) {
+		 for(int j = 0; j<8; j++) {
+			 board[i][j].setRoom(rooms.get(8));
+		 }
+	 }
+	 board[9][5].setRoom(null);
+	 board[9][6].setRoom(null);
+	 board[9][7].setRoom(null);
+	 //Now for clean up/unaccessable zones
+	 for(int j = 0; j<24; j++) {
+		 board[0][j].setAccess(false);
+	 }
+	 board[0][9].setAccess(true);
+	 board[0][14].setAccess(true);
+	 board[1][6].setAccess(false);
+	 board[1][17].setAccess(false);
+	 board[5][23].setAccess(false);
+	 board[7][23].setAccess(false);
+	 board[13][23].setAccess(false);
+	 board[14][23].setAccess(false);
+	 board[18][23].setAccess(false);
+	 board[20][23].setAccess(false);
+	 board[24][6].setAccess(false);
+	 board[24][8].setAccess(false);
+	 board[24][15].setAccess(false);
+	 board[24][17].setAccess(false);
+	 board[6][0].setAccess(false);
+	 board[8][0].setAccess(false);
+	 board[16][0].setAccess(false);
+	 board[18][0].setAccess(false);
+  }
+
+
+  public Location[][] getBoard(){return this.board;}
+  
+  public Location getLocation(int x, int y) {
+	if(x > 24 || x < 0 || y > 23 || y < 0) {
+		return null;
+	}
+	return board[x][y];
+  }
+}
