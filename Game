@@ -1,13 +1,11 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Game {
 
-	private Board board = new Board();
+	private Board board;
 
-	public Game(Board board) {this.board = board;}
-
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		
-	}
+	public Game(){}
 
 	public void movePlayer(Player p, int diceroll, String direction, int steps) {
 		for (int i = 0; i < diceroll; i++) {
@@ -19,11 +17,31 @@ public class Game {
 			}
 		}
 	}
-	
-	public Player createPlayer() {return null;}
-	
-	public Weapon createWeapon() {return null;}
-	
-	public Person createPerson() {return null;}
 
+	public Player createPlayer() {return null;}
+
+	public Weapon createWeapon() {return null;}
+
+	public Person createPerson() {return null;}
+	
+	
+
+	public void initiliseBoard() {
+		List<Room> rooms  = new ArrayList<Room>();
+		rooms.add(new Room("Kitchen"));
+		rooms.add(new Room("Ballroom"));
+		rooms.add(new Room("Conservatory"));
+		rooms.add(new Room("Billiard"));
+		rooms.add(new Room("Library"));
+		rooms.add(new Room("Study"));
+		rooms.add(new Room("Hall"));
+		rooms.add(new Room("Lounge"));
+		rooms.add(new Room("Dining"));
+		board = new Board(rooms);
+	}
+	
+	public static void main(String[] args) {
+	       Game game = new Game();
+	       game.initiliseBoard();
+		}
 }
