@@ -1,0 +1,29 @@
+public class Game {
+
+	private Board board = new Board();
+
+	public Game(Board board) {this.board = board;}
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void movePlayer(Player p, int diceroll, String direction, int steps) {
+		for (int i = 0; i < diceroll; i++) {
+			switch (direction) {
+			case "north": p.moveNorth(steps);
+			case "south": p.moveSouth(steps);
+			case "east": p.moveEast(steps);
+			case "west": p.moveWest(steps);
+			}
+		}
+	}
+	
+	public Player createPlayer() {return null;}
+	
+	public Weapon createWeapon() {return null;}
+	
+	public Person createPerson() {return null;}
+
+}
