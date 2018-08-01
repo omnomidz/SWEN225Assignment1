@@ -1,10 +1,13 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Game {
 
 	private Board board;
-
+	List<Room> rooms;
+	List<Weapon> weapons;
+	List<Person> people;
 	public Game(){}
 
 	public void movePlayer(Player p, int diceroll, String direction, int steps) {
@@ -18,13 +21,26 @@ public class Game {
 		}
 	}
 
-	public Player createPlayer() {return null;}
+      public Player createPlayer() {return null;}
 
-	public Weapon createWeapon() {return null;}
+      public void initiliseWeapons() {
+      List<Weapon> weapons = new ArrayList<Weapon>();
+      weapons.add(new Weapon("CandleStick"));
+      weapons.add(new Weapon("Dagger"));
+      weapons.add(new Weapon("Lead Pipe"));
+      weapons.add(new Weapon("Revolver"));
+      weapons.add(new Weapon("Rope"));
+      weapons.add(new Weapon("Spanner"));
+      this.weapons = weapons;
+	}
 
-	public Person createPerson() {return null;}
-	
-	
+	public Person initilisePersons() {
+		return null;}
+
+	public int diceRoll() {
+		Random rand = new Random();
+		return (rand.nextInt(6) + 1) + (rand.nextInt(6) + 1);
+	}
 
 	public void initiliseBoard() {
 		List<Room> rooms  = new ArrayList<Room>();
@@ -37,11 +53,13 @@ public class Game {
 		rooms.add(new Room("Hall"));
 		rooms.add(new Room("Lounge"));
 		rooms.add(new Room("Dining"));
+		this.rooms = rooms;
 		board = new Board(rooms);
 	}
-	
+
 	public static void main(String[] args) {
 	       Game game = new Game();
 	       game.initiliseBoard();
+	       game.initiliseWeapons();
 		}
 }
