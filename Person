@@ -4,12 +4,11 @@ public class Person {
   //Contains name and the starting location of the person
   String name;
   Location startinglocation;
-  public Person(String name, int x, int y) {
+  public Person(String name, Location location) {
 	  this.name = name;
-	  //must implement board for this part
-	  startinglocation = board.getLocation(x,y);
+	  startinglocation = location;
   }
-  
+
   public String getName() {return this.name;}
   public Location getStart() {return this.startinglocation;}
 }
