@@ -4,49 +4,25 @@ public class Player {
 	// Represents the players playing the game
 	// Contains the location, character they are playing and list of cards they know
 	// of
+	String name;
 	Location location;
 	Person person;
 	ArrayList<Card> cards = new ArrayList<Card>();
 
-	public Player() { 	}
+	public Player() {}
 
-	public String[] makeSuggestion() {return null;}
-
-	public String[] makeAccusation() {return null;}
-
-	public void moveNorth(int distance) {
-		if (getLocation().getAccess()) {
-			location = Board.getLocation(location.x, location.y - distance);
-		}
+	public String[] makeSuggestion() {
+		//Allows players to make murder suggestions
+		return null;
 	}
-
-	public void moveSouth(int distance) {
-		if (getLocation().getAccess()) {
-			location = Board.getLocation(location.x, location.y + distance);
-		}
-	}
-
-	public void moveEast(int distance) {
-		if (getLocation().getAccess()) {
-			location = Board.getLocation(location.x + distance, location.y);
-		}
-	}
-
-	public void moveWest(int distance) {
-		if (getLocation().getAccess()) {
-			location = Board.getLocation(location.x - distance, location.y);
-		}
-	}
-
-	public Location getLocation() {return location;}
-
-	public void setLocation(Location location) {this.location = location;}
-
-	public Person getPerson() {return person;}
-
-	public void setPerson(Person person) {this.person = person;}
-
-	public ArrayList<Card> getCards() { return cards;}
-
-	public void setCards(ArrayList<Card> cards) {	this.cards = cards;}
+    public String[] makeAccusation() {
+    	//Allows players to make murder accusations
+    	return null;
+    }
+    
+    //getters and setters
+    public Person getPerson() {return person;}
+    public void setPerson(Person person) {this.person = person;}
+    public Location getLocation() {return location;}
+    public void setLocation(Location l) {location = l;}
 }
