@@ -8,13 +8,14 @@ class Location {
   Person person = null;
   Room room = null;
   Player player = null;
-  
+  Boolean access = true;
+
   public Location(int x, int y) {
 	  this.x = x;
 	  this.y = y;
   }
   //required getters and setters
-  
+
   public int getX() {return this.x;}
   public int getY() {return this.y;}
   public Weapon getWeapon(){return this.weapon;}
@@ -25,4 +26,6 @@ class Location {
   public void setRoom(Room r) {this.room = r;}
   public Player getPlayer() {return this.player;}
   public void setPlayer(Player p) {this.player = p;}
+  public boolean getAccess() {return access;}
+  public void setAccess(boolean b) {access = b;}
 }
