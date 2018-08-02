@@ -1,11 +1,11 @@
 
 class Weapon {
-  //Represents the weapons in the game and information about them
+  //Represents the weapons in the game
   String name;
   Location location;
   public Weapon(String name) {this.name = name;}
   
   public Location getLocation() {return location;}
   public void setLocation(Location location) {this.location = location;}
-
+  public String getName() {return this.name;}
 }
