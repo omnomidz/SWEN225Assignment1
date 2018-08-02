@@ -21,7 +21,11 @@ public class Game {
 		}
 	}
 
-      public Player createPlayer() {return null;}
+      public void createPlayer(Person choice, String name, int number) {
+		for (int i = 0; i < number; i++) {
+			
+		}
+    }
 
       public void initiliseWeapons() {
       List<Weapon> weapons = new ArrayList<Weapon>();
@@ -35,7 +39,15 @@ public class Game {
 	}
 
 	public Person initilisePersons() {
-		return null;}
+		List<Person> people = new ArrayList<Person>();
+		    people.add(new Person("Miss Scarlet"));
+		    people.add(new Person("Colonel Mustard"));
+		    people.add(new Person("Mrs. White"));
+		    people.add(new Person("Mr. Green"));
+		    people.add(new Person("Mrs. Peacock"));
+		    people.add(new Person("Professor Plum"));
+		    this.people = people;
+		    }
 
 	public int diceRoll() {
 		Random rand = new Random();
@@ -55,6 +67,34 @@ public class Game {
 		rooms.add(new Room("Dining"));
 		this.rooms = rooms;
 		board = new Board(rooms);
+	}
+	
+	public void moveNorth(Player p, int distance) {
+		if (p.getLocation().getAccess()) {
+			Location l = new Location(p.getLocation().x, p.getLocation().y - distance);
+			p.setLocation(l);
+		}
+	}
+
+	public void moveSouth(Player p, int distance) {
+		if (p.getLocation().getAccess()) {
+			Location l = new Location(p.getLocation().x, p.getLocation().y + distance);
+			p.setLocation(l);
+		}
+	}
+
+	public void moveEast(Player p, int distance) {
+		if (p.getLocation().getAccess()) {
+			Location l = new Location(p.getLocation().x + distance, p.getLocation().y);
+			p.setLocation(l);
+		}
+	}
+
+	public void moveWest(Player p, int distance) {
+		if (p.getLocation().getAccess()) {
+			Location l = new Location(p.getLocation().x - distance, p.getLocation().y);
+			p.setLocation(l);
+		}
 	}
 
 	public static void main(String[] args) {
