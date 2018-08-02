@@ -21,13 +21,15 @@ public class Game {
 		}
 	}
 
-      public void createPlayer(Person choice, String name, int number) {
-		for (int i = 0; i < number; i++) {
-			
-		}
+    public void createPlayer(Person choice, String name, int number) {
+    //Creates the indivdual players
+      for (int i = 0; i < number; i++) {
+
+      }
     }
 
-      public void initiliseWeapons() {
+    public void initiliseWeapons() {
+    //creates the game weapons
       List<Weapon> weapons = new ArrayList<Weapon>();
       weapons.add(new Weapon("CandleStick"));
       weapons.add(new Weapon("Dagger"));
@@ -38,23 +40,26 @@ public class Game {
       this.weapons = weapons;
 	}
 
-	public Person initilisePersons() {
-		List<Person> people = new ArrayList<Person>();
-		    people.add(new Person("Miss Scarlet"));
-		    people.add(new Person("Colonel Mustard"));
-		    people.add(new Person("Mrs. White"));
-		    people.add(new Person("Mr. Green"));
-		    people.add(new Person("Mrs. Peacock"));
-		    people.add(new Person("Professor Plum"));
-		    this.people = people;
-		    }
+	public void initilisePersons() {
+	  //Creates the game characters
+	  List<Person> people = new ArrayList<Person>();
+	  people.add(new Person("Miss Scarlet", board.getLocation(24, 7)));
+	  people.add(new Person("Colonel Mustard", board.getLocation(17, 0)));
+	  people.add(new Person("Mrs. White", board.getLocation(0, 9)));
+      people.add(new Person("Mr. Green", board.getLocation(0, 14)));
+      people.add(new Person("Mrs. Peacock", board.getLocation(6, 23)));
+      people.add(new Person("Professor Plum", board.getLocation(19, 23)));
+      this.people = people;
+	}
 
 	public int diceRoll() {
+	//Produces the sum of two random numbers between 1-6
 		Random rand = new Random();
 		return (rand.nextInt(6) + 1) + (rand.nextInt(6) + 1);
 	}
 
 	public void initiliseBoard() {
+		//creates rooms and the board
 		List<Room> rooms  = new ArrayList<Room>();
 		rooms.add(new Room("Kitchen"));
 		rooms.add(new Room("Ballroom"));
@@ -68,38 +73,37 @@ public class Game {
 		this.rooms = rooms;
 		board = new Board(rooms);
 	}
-	
+
+	//Various move commands
 	public void moveNorth(Player p, int distance) {
 		if (p.getLocation().getAccess()) {
 			Location l = new Location(p.getLocation().x, p.getLocation().y - distance);
 			p.setLocation(l);
 		}
 	}
-
-	public void moveSouth(Player p, int distance) {
+    public void moveSouth(Player p, int distance) {
 		if (p.getLocation().getAccess()) {
 			Location l = new Location(p.getLocation().x, p.getLocation().y + distance);
 			p.setLocation(l);
 		}
 	}
-
-	public void moveEast(Player p, int distance) {
+    public void moveEast(Player p, int distance) {
 		if (p.getLocation().getAccess()) {
 			Location l = new Location(p.getLocation().x + distance, p.getLocation().y);
 			p.setLocation(l);
 		}
 	}
-
-	public void moveWest(Player p, int distance) {
+    public void moveWest(Player p, int distance) {
 		if (p.getLocation().getAccess()) {
 			Location l = new Location(p.getLocation().x - distance, p.getLocation().y);
 			p.setLocation(l);
 		}
 	}
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 	       Game game = new Game();
 	       game.initiliseBoard();
 	       game.initiliseWeapons();
+	       game.initilisePersons();
 		}
 }
