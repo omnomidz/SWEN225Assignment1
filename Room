@@ -1,11 +1,17 @@
+import java.util.ArrayList;
+import java.util.List;
 
 public class Room {
   //Represents the different rooms on the board
   //Contains name and a list of the locations that sit within
   String name;
-  public Room(String name) {
+  List<Location> entrys;
+  public Room(String name, List<Location> entrys) {
 	  this.name = name;
+	  this.entrys = entrys;
   }
 
   public String getName() {return this.name;}
+  public List<Location> getEntrys(){return entrys;}
+  
 }
