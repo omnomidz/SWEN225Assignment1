@@ -101,6 +101,8 @@ public class Game {
 	}
 
 	//Various move commands
+	//Move commands will need to check every location the player wants to move to to make sure the location is accessable
+	//Maybe a recursive method?
 	public void moveNorth(Player p, int distance) {
 		if (p.getLocation().getAccess()) {
 			Location l = new Location(p.getLocation().x, p.getLocation().y - distance);
