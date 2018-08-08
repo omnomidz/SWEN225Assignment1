@@ -1,32 +1,20 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Game {
 
 	private Board board;
-	List<Room> rooms;
-	List<Weapon> weapons;
-	List<Person> people;
+	List<Room> rooms = new ArrayList<Room>();
+	List<Weapon> weapons = new ArrayList<Weapon>();
+	List<Person> people = new ArrayList<Person>();
+	List<Player> players;
+	Scanner input = new Scanner(System.in);
+	//in order : Room - Weapon - Person
+	Object murderinfo[] = new Object[3];
+
 	public Game(){}
-
-	public void movePlayer(Player p, int diceroll, String direction, int steps) {
-		for (int i = 0; i < diceroll; i++) {
-			switch (direction) {
-			case "north": p.moveNorth(steps);
-			case "south": p.moveSouth(steps);
-			case "east": p.moveEast(steps);
-			case "west": p.moveWest(steps);
-			}
-		}
-	}
-
-    public void createPlayer(Person choice, String name, int number) {
-    //Creates the indivdual players
-      for (int i = 0; i < number; i++) {
-
-      }
-    }
 
     public void initiliseWeapons() {
     //creates the game weapons
@@ -100,38 +88,235 @@ public class Game {
 		board = new Board(rooms);
 	}
 
+	public void movePlayer(Player p, int diceroll) {
+		//asks the player where/how far they would like to move until they run out of steps
+		//maybe allow them to not move?
+		while(diceroll>0){
+			boolean move = false;
+			System.out.println("Available steps : " + diceroll);
+			System.out.println("Which direction would like to move in? (enter either N, S, E, W)");
+			String direction = input.next();
+			System.out.println("How far would you like to move?");
+			int steps = Integer.parseInt(input.next());
+			if(steps > diceroll) {
+				System.out.println("Please enter a valid step count");
+				continue;
+			}
+			switch (direction) {
+			  case "N": move = moveNorth(p, steps);
+			  case "S": move = moveSouth(p, steps);
+			  case "E": move = moveEast(p, steps);
+			  case "W": move = moveWest(p, steps);
+			  default : System.out.println("Please enter a valid direction (enter either N, S, E, W)");
+			}
+			//only chagen total steps if the player actually moves
+			if(move) {diceroll -= steps;}
+
+		}
+	}
+
 	//Various move commands
 	//Move commands will need to check every location the player wants to move to to make sure the location is accessable
 	//Maybe a recursive method?
-	public void moveNorth(Player p, int distance) {
-		if (p.getLocation().getAccess()) {
-			Location l = new Location(p.getLocation().x, p.getLocation().y - distance);
-			p.setLocation(l);
+	public boolean moveNorth(Player p, int distance) {
+		boolean move = true;
+		int x = p.getLocation().x;
+		int y = p.getLocation().y;
+		for(int i = 1; i<= distance; i++) {
+			//check if the location is accessable, and then if the room entering is correct
+			if(!board.getLocation(x - i, y).getAccess()) {
+				move = false;
+			}
+			if(!enterRoom(p, "N") || !exitRoom(p, "N")) {
+				move = false;
+			}
 		}
+		if(move) {p.setLocation(board.getLocation(x - distance, y));}
+		return move;
 	}
-    public void moveSouth(Player p, int distance) {
-		if (p.getLocation().getAccess()) {
-			Location l = new Location(p.getLocation().x, p.getLocation().y + distance);
-			p.setLocation(l);
+    public boolean moveSouth(Player p, int distance) {
+    	boolean move = true;
+		int x = p.getLocation().x;
+		int y = p.getLocation().y;
+		for(int i = 1; i<= distance; i++) {
+			//check if the location is accessable, and then if the room entering is correct
+			if(!board.getLocation(x + i, y).getAccess()) {
+				move = false;
+			}
+			if(!enterRoom(p, "S") || !exitRoom(p, "S")) {
+				move = false;
+			}
 		}
+		if(move) {p.setLocation(board.getLocation(x + distance, y));}
+		return move;
 	}
-    public void moveEast(Player p, int distance) {
-		if (p.getLocation().getAccess()) {
-			Location l = new Location(p.getLocation().x + distance, p.getLocation().y);
-			p.setLocation(l);
+    public boolean moveEast(Player p, int distance) {
+    	boolean move = true;
+		int x = p.getLocation().x;
+		int y = p.getLocation().y;
+		for(int i = 1; i<= distance; i++) {
+			//check if the location is accessable, and then if the room entering is correct
+			if(!board.getLocation(x, y + i).getAccess()) {
+				move = false;
+			}
+			if(!enterRoom(p, "E") || !exitRoom(p, "E")) {
+				move = false;
+			}
 		}
+		if(move) {p.setLocation(board.getLocation(x, y + distance));}
+		return move;
 	}
-    public void moveWest(Player p, int distance) {
-		if (p.getLocation().getAccess()) {
-			Location l = new Location(p.getLocation().x - distance, p.getLocation().y);
-			p.setLocation(l);
+    public boolean moveWest(Player p, int distance) {
+    	boolean move = true;
+		int x = p.getLocation().x;
+		int y = p.getLocation().y;
+		for(int i = 1; i<= distance; i++) {
+			//check if the location is accessable, and then if the room entering is correct
+			if(!board.getLocation(x, y - i).getAccess()) {
+				move = false;
+			}
+			if(!enterRoom(p, "W") || !exitRoom(p, "W")) {
+				move = false;
+			}
 		}
+		if(move) {p.setLocation(board.getLocation(x, y - distance));}
+		return move;
 	}
+
+    public boolean enterRoom(Player p, String direction) {
+    	//checks if a player can enter a room
+    	int x = p.getLocation().x;
+    	int y = p.getLocation().y;
+    	if(direction == "N") {
+    		if(p.getLocation().getRoom() == null && board.getLocation(x-1, y) != null) {
+    			if(!board.getLocation(x-1, y).getRoom().getEntrys().contains(p.getLocation())) {
+    				return false;
+    			}
+    		}
+    	}
+        if(direction == "S") {
+        	if(p.getLocation().getRoom() == null && board.getLocation(x+1, y) != null) {
+    			if(!board.getLocation(x+1, y).getRoom().getEntrys().contains(p.getLocation())) {
+    				return false;
+    			}
+    		}
+    	}
+        if(direction == "E") {
+        	if(p.getLocation().getRoom() == null && board.getLocation(x, y +1) != null) {
+    			if(!board.getLocation(x, y+1).getRoom().getEntrys().contains(p.getLocation())) {
+    				return false;
+    			}
+    		}
+        }
+        if(direction == "W") {
+        	if(p.getLocation().getRoom() == null && board.getLocation(x, y -1) != null) {
+    			if(!board.getLocation(x, y-1).getRoom().getEntrys().contains(p.getLocation())) {
+    				return false;
+    			}
+    		}
+        }
+        return true;
+    }
+
+    public boolean exitRoom(Player p, String direction) {
+    	int x = p.getLocation().x;
+    	int y = p.getLocation().y;
+    	if(direction == "N") {
+    		if(p.getLocation().getRoom() != null && board.getLocation(x-1, y) == null) {
+    			if(!p.getLocation().getRoom().getEntrys().contains(board.getLocation(x-1, y))) {
+    				return false;
+    			}
+    		}
+    	}
+        if(direction == "S") {
+        	if(p.getLocation().getRoom() != null && board.getLocation(x+1, y) == null) {
+    			if(!p.getLocation().getRoom().getEntrys().contains(board.getLocation(x+1, y))) {
+    				return false;
+    			}
+    		}
+    	}
+        if(direction == "E") {
+        	if(p.getLocation().getRoom() != null && board.getLocation(x, y+1) == null) {
+    			if(!p.getLocation().getRoom().getEntrys().contains(board.getLocation(x, y+1))) {
+    				return false;
+    			}
+    		}
+        }
+        if(direction == "W") {
+        	if(p.getLocation().getRoom() != null && board.getLocation(x, y-1) == null) {
+    			if(!p.getLocation().getRoom().getEntrys().contains(board.getLocation(x, y-1))) {
+    				return false;
+    			}
+    		}
+        }
+        return true;
+    }
+
+    public void createMurderInfo(List<Room> allrooms, List<Weapon> allweapons, List<Person> allpersons) {
+    	Random rand = new Random();
+    	murderinfo[0] = rooms.get(rand.nextInt(rooms.size()));
+    	murderinfo[1] = weapons.get(rand.nextInt(weapons.size()));
+    	murderinfo[2] = people.get(rand.nextInt(people.size()));
+    	allrooms.remove(murderinfo[0]);
+    	allweapons.remove(murderinfo[1]);
+    	allpersons.remove(murderinfo[2]);
+    }
+    public void createPlayers() {
+    	//creates as many players as required
+    	players = new ArrayList<Player>();
+    	int count = 0;
+    	while(count < 2 || count > 6) {
+    	  System.out.println("How many players would you like? (between 2-6)");
+    	  count = input.nextInt();
+    	}
+    	for(int i = 0; i<count; i++) {
+    		players.add(new Player(people.get(i)));
+    	}
+    }
+    
+    public void giveCards(List<Room> allrooms, List<Weapon> allweapons, List<Person> allpersons) {
+    	Random rand = new Random();
+    	int counter = 0;
+    	while(!allrooms.isEmpty()) {
+    		Room room = allrooms.get(rand.nextInt(allrooms.size()));
+    		allrooms.remove(room);
+    		players.get(counter).knownrooms.add(room);
+    		counter++;
+    		//resets the counter so we will add the next room to the first player
+    		if(counter == players.size()) {counter = 0;}
+    	}
+    	counter = 0;
+    	while(!allweapons.isEmpty()) {
+    		Weapon weapon = allweapons.get(rand.nextInt(allweapons.size()));
+    		allweapons.remove(weapon);
+    		players.get(counter).knownweapons.add(weapon);
+    		counter++;
+    		//resets the counter so we will add the next weapon to the first player
+    		if(counter == players.size()) {counter = 0;}
+    	}
+    	counter = 0;
+    	while(!allpersons.isEmpty()) {
+    		Person person = allpersons.get(rand.nextInt(allpersons.size()));
+    		allpersons.remove(person);
+    		players.get(counter).knownpersons.add(person);
+    		counter++;
+    		//resets the counter so we will add the next person to the first player
+    		if(counter == players.size()) {counter = 0;}
+    	}
+    }
+    
 
     public static void main(String[] args) {
 	       Game game = new Game();
 	       game.initiliseBoard();
 	       game.initiliseWeapons();
 	       game.initilisePersons();
-		}
+	       game.createPlayers();
+	       List<Room> allrooms = game.rooms;
+	       List<Weapon> allweapons = game.weapons;
+	       List<Person> allpersons = game.people;
+	       game.createMurderInfo(allrooms, allweapons, allpersons);
+	       game.giveCards(allrooms, allweapons, allpersons);
+	       //now we can begin the game
+   }
 }
