@@ -4,12 +4,17 @@ public class Player {
 	// Represents the players playing the game
 	// Contains the location, character they are playing and list of cards they know
 	// of
-	String name;
 	Location location;
 	Person person;
-	ArrayList<Card> cards = new ArrayList<Card>();
+	ArrayList<Weapon> knownweapons = new ArrayList<Weapon>();
+	ArrayList<Room> knownrooms = new ArrayList<Room>();
+	ArrayList<Person> knownpersons = new ArrayList<Person>();
 
-	public Player() {}
+
+	public Player(Person person) {
+		this.person = person;
+		this.location = person.startinglocation;
+	}
 
 	public String[] makeSuggestion() {
 		//Allows players to make murder suggestions
@@ -19,7 +24,7 @@ public class Player {
     	//Allows players to make murder accusations
     	return null;
     }
-    
+
     //getters and setters
     public Person getPerson() {return person;}
     public void setPerson(Person person) {this.person = person;}
