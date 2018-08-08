@@ -6,6 +6,8 @@ public class Room {
   //Contains name and a list of the locations that sit within
   String name;
   List<Location> entrys;
+  List<Weapon> weapons = new ArrayList<Weapon>();
+  List<Person> people = new ArrayList<Person>();
   public Room(String name, List<Location> entrys) {
 	  this.name = name;
 	  this.entrys = entrys;
@@ -13,5 +15,6 @@ public class Room {
 
   public String getName() {return this.name;}
   public List<Location> getEntrys(){return entrys;}
-  
+  public List<Weapon> getWeapons(){return weapons;}
+  public List<Person> getPeople(){return people;}
 }
