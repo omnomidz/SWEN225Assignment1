@@ -1,11 +1,20 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.List;
-
+/**
+ * The board looks after the locations the represent the different positions on the board. It holds a 2d array contains all the locations that make up the board. It is also
+ * incharge of redrawing the board after every move.
+ * @author hildrecall and rehanmidh
+ *
+ */
 
 public class Board {
 	private Location[][] board;
 
+	/**
+	 * The constructor. It creates all the locations, as well as sorting them into rooms and inaccessable areas. 
+	 * @param rooms A list of all the rooms on the board
+	 */
 	public Board(List<Room> rooms) {
 		// initilising all the locations on the board, as well as any values those
 		// loactions might have
@@ -18,65 +27,81 @@ public class Board {
 		for (int i = 1; i < 7; i++) {
 			for (int j = 0; j < 6; j++) {
 				board[i][j].setRoom(rooms.get(0));
+				rooms.get(0).entrys.add(board[i][j]);
 			}
 		}
 		// Ballroom
 		for (int i = 2; i < 8; i++) {
 			for (int j = 8; j < 16; j++) {
 				board[i][j].setRoom(rooms.get(1));
+				rooms.get(1).entrys.add(board[i][j]);
 			}
 		}
 		for (int j = 10; j < 14; j++) {
 			board[2][j].setRoom(rooms.get(1));
+			rooms.get(1).entrys.add(board[2][j]);
 		}
 		// Conservatory
 		for (int i = 1; i < 6; i++) {
 			for (int j = 18; j < 24; j++) {
 				board[i][j].setRoom(rooms.get(2));
+				rooms.get(2).entrys.add(board[i][j]);
 			}
 		}
 		board[5][18].setRoom(null);
+		rooms.get(2).getEntrys().remove(board[5][18]);
 		// Billiard
 		for (int i = 8; i < 13; i++) {
 			for (int j = 18; j < 24; j++) {
 				board[i][j].setRoom(rooms.get(3));
+				rooms.get(3).entrys.add(board[i][j]);
 			}
 		}
 		// Library
 		for (int i = 14; i < 19; i++) {
 			for (int j = 17; j < 24; j++) {
 				board[i][j].setRoom(rooms.get(4));
+				rooms.get(4).entrys.add(board[i][j]);
 			}
 		}
 		board[14][17].setRoom(null);
 		board[18][17].setRoom(null);
+		rooms.get(4).getEntrys().remove(board[14][17]);
+		rooms.get(4).getEntrys().remove(board[18][17]);
 		// Study
 		for (int i = 21; i < 25; i++) {
 			for (int j = 17; j < 24; j++) {
 				board[i][j].setRoom(rooms.get(5));
+				rooms.get(5).entrys.add(board[i][j]);
 			}
 		}
 		// Hall
 		for (int i = 18; i < 25; i++) {
 			for (int j = 9; j < 15; j++) {
 				board[i][j].setRoom(rooms.get(6));
+				rooms.get(6).entrys.add(board[i][j]);
 			}
 		}
 		// Lounge
 		for (int i = 19; i < 25; i++) {
 			for (int j = 0; j < 7; j++) {
 				board[i][j].setRoom(rooms.get(7));
+				rooms.get(7).entrys.add(board[i][j]);
 			}
 		}
 		// Dining Room
 		for (int i = 9; i < 16; i++) {
 			for (int j = 0; j < 8; j++) {
 				board[i][j].setRoom(rooms.get(8));
+				rooms.get(8).entrys.add(board[i][j]);
 			}
 		}
 		board[9][5].setRoom(null);
 		board[9][6].setRoom(null);
 		board[9][7].setRoom(null);
+		rooms.get(8).getEntrys().remove(board[9][5]);
+		rooms.get(8).getEntrys().remove(board[9][6]);
+		rooms.get(8).getEntrys().remove(board[9][7]);
 		// Now for clean up/unaccessable zones
 		for (int j = 0; j < 24; j++) {
 			board[0][j].setAccess(false);
@@ -100,7 +125,7 @@ public class Board {
 		board[16][0].setAccess(false);
 		board[18][0].setAccess(false);
 	}
-
+   
 	public Location[][] getBoard() {
 		return this.board;
 	}
@@ -137,7 +162,10 @@ public class Board {
 		return board;
 	}*/
 	
-
+    /**
+     * Draws the board
+     * @param g The graphics that we are drawing the board to. 
+     */
     public void paint(Graphics g) {
     	for (int i = 0; i < 24; i++) {
 			for (int j = 0; j < 25; j++) {
@@ -169,4 +197,4 @@ public class Board {
     	}
     }
 }
-    
+  
