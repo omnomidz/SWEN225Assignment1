@@ -1,29 +1,31 @@
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+/**
+ * Represents the players playing the game. Holds their starting information, as well as their current knowledge about the murder. Also contains their position on the board
+ * and the person they are playing as.
+ * @author hildrecall and rehanmidh
+ *
+ */
 
 public class Player {
-	// Represents the players playing the game
-	// Contains the location, character they are playing and list of cards they know
-	// of
+
 	Location location;
 	Person person;
-	ArrayList<Weapon> knownweapons = new ArrayList<Weapon>();
-	ArrayList<Room> knownrooms = new ArrayList<Room>();
-	ArrayList<Person> knownpersons = new ArrayList<Person>();
-
-
+	//We are using sets to imitate cards, allowing us to work with the objects themselves
+	Set<Weapon> startweapons = new HashSet<Weapon>();
+	Set<Room> startrooms = new HashSet<Room>();
+	Set<Person> startpersons = new HashSet<Person>();
+	Set<Weapon> knownweapons = new HashSet<Weapon>();
+	Set<Room> knownrooms = new HashSet<Room>();
+	Set<Person> knownpersons = new HashSet<Person>();
+	
 	public Player(Person person) {
 		this.person = person;
-		this.location = person.startinglocation;
+		this.location = person.location;
 	}
-
-	public String[] makeSuggestion() {
-		//Allows players to make murder suggestions
-		return null;
-	}
-    public String[] makeAccusation() {
-    	//Allows players to make murder accusations
-    	return null;
-    }
 
     //getters and setters
     public Person getPerson() {return person;}
