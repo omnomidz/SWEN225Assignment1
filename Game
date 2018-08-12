@@ -6,16 +6,18 @@ import java.util.Scanner;
 
 
 /**
- * Cluedo is a guessing game involving 2-6 players trying to figure out where, how and who commited a murder. It involves players moving around the board and using 
+ * Cluedo is a guessing game involving 2-6 players trying to figure out where, how and who commited a murder. It involves players moving around the board and using
  * suggestions to figure how it happened. When someone is ready, they will make an accusation and attempt to win the game. If they are wrong, they will instead lose
- * and are not allowed another chance. The game is played until either everyone has lost, or someone has successfully figured out the crime
- * 
+ * and are not allowed another chance. The game is played until either everyone has lost, or someone has successfully figured out the crime.
+ * Just a quick note, I do realise that I added game to as a parameter to alot fo the methods even though they are being called on a game object, but it doesn't matter
+ * as there is only ever going to be one game object
+ *
  * @author hildrecall and rehanmidh
  */
 public class Game {
 
-	private Board board;
-	List<Room> rooms = new ArrayList<Room>();
+	private Board board = null;
+	List<Room> rooms;
 	List<Weapon> weapons = new ArrayList<Weapon>();
 	List<Person> people = new ArrayList<Person>();
 	List<Player> players;
@@ -24,17 +26,20 @@ public class Game {
 	Object murderinfo[] = new Object[3];
 	Player winner;
 
+	public Board getBoard() {
+		return board;
+	}
 	/**
 	 * The game object with where the game is run from. It keeps track of all the objects in and on the board, and has a min function where the game is played.
 	 */
 	public Game(){}
-	
+
 	/**
      * This method creates all the weapons and adds them into the game
     */
     public void initiliseWeapons() {
       List<Weapon> weapons = new ArrayList<Weapon>();
-      weapons.add(new Weapon("CandleStick"));
+      weapons.add(new Weapon("Candlestick"));
       weapons.add(new Weapon("Dagger"));
       weapons.add(new Weapon("Lead Pipe"));
       weapons.add(new Weapon("Revolver"));
@@ -49,9 +54,9 @@ public class Game {
 	  List<Person> people = new ArrayList<Person>();
 	  people.add(new Person("Miss Scarlet", board.getLocation(24, 7)));
 	  people.add(new Person("Colonel Mustard", board.getLocation(17, 0)));
-	  people.add(new Person("Mrs. White", board.getLocation(0, 9)));
-      people.add(new Person("Mr. Green", board.getLocation(0, 14)));
-      people.add(new Person("Mrs. Peacock", board.getLocation(6, 23)));
+	  people.add(new Person("Mrs White", board.getLocation(0, 9)));
+      people.add(new Person("Mr Green", board.getLocation(0, 14)));
+      people.add(new Person("Mrs Peacock", board.getLocation(6, 23)));
       people.add(new Person("Professor Plum", board.getLocation(19, 23)));
       this.people = people;
       for(Person p : people) {
@@ -96,7 +101,7 @@ public class Game {
 	/**
 	 * Controls the movement phase of each of the players. Players are given a number of steps they make take (the diceroll), and then are repetively asked how far they
 	 * would like to go and in which direction until they run out of steps.
-	 * @param p The current player 
+	 * @param p The current player
 	 * @param diceroll The total number of movement available
 	 */
 	public void movePlayer(Player p, int diceroll) {
@@ -312,7 +317,7 @@ public class Game {
     	allweapons.remove(murderinfo[1]);
     	allpersons.remove(murderinfo[2]);
     }
-    
+
     /**
      * Creates all of our players, but automatically selecting a character for them to be. Moves them into our games player array
      */
@@ -448,11 +453,66 @@ public class Game {
     	suggest[1] = suggestweapon;
     	suggest[2] = suggestperson;
     	return suggest;
-    	
+
+    }
+    /**
+     * Allows players to make accusations. Goes through and asks individually for each object they would
+     * like to be a part of their accusation. Very similar to discoverSuggestion, except it will also ask
+     * for a room
+     * @param game The current game being played
+     * @param p The current player
+     * @return Object array containing the objects they are making the accusation about
+     */
+    public Object[] discoverAccusation(Game game, Player p) {
+    	Room accusationroom = null;
+    	Weapon accusationweapon = null;
+    	Person accusationperson = null;
+    	//Finding the room accusation
+    	while(accusationroom == null) {
+    	   System.out.println("Which room would you like to accuse?");
+    	   String room = game.input.nextLine();
+    	   for(Room r : game.rooms) {
+    		   if(r.getName() == room || r.getName().toLowerCase() == room) {
+    			   accusationroom = r;
+    			   //we also must move the weapon into the room
+    			   accusationroom.entrys.get(0).weapon.add(accusationweapon);
+    		   }
+    	   }
+    	}
+    	//Finding the weapon accuastion
+    	while(accusationweapon == null) {
+    	   System.out.println("Which weapon would you like to accuse?");
+    	   String wep = game.input.nextLine();
+    	   for(Weapon w : game.weapons) {
+    		   if(w.getName() == wep || w.getName().toLowerCase() == wep) {
+    			   accusationweapon = w;
+    			   //we also must move the weapon into the room
+    			   accusationroom.entrys.get(0).weapon.add(accusationweapon);
+    		   }
+    	   }
+    	}
+    	//Finding the person accustion
+    	while(accusationperson == null) {
+     	   System.out.println("Which person would you like to accuse?");
+     	   String person = game.input.nextLine();
+     	   for(Person a : game.people) {
+     		   if(a.getName() == person || a.getName().toLowerCase() == person) {
+     			  accusationperson = a;
+     			  accusationroom.entrys.get(0).person.add(a);
+     			   a.location = accusationroom.entrys.get(0);
+     		   }
+     	   }
+     	}
+    	Object accusation[] = new Object[3];
+    	accusation[0] = accusationroom;
+    	accusation[1] = accusationweapon;
+    	accusation[2] = accusationperson;
+    	return accusation;
+
     }
     /**
      * Resolves the current suggestion. Goes through the other players and attempts to find objects match those in the suggestion. If we do, the other player may choose
-     * which piece of information to reveal to the suggesting player. 
+     * which piece of information to reveal to the suggesting player.
      * @param p The current player
      * @param game The current game being player
      * @param discover The object array contain the suggestion objects
@@ -489,6 +549,20 @@ public class Game {
     	System.out.println("No one has a matching card");
     }
     /**
+     * Decides if the game has won. Compares the accusation array against the murderinfo array and returns a
+     * boolean reflecting the result of the comparison
+     * @param discoveraccu Object array containing the accusation
+     * @param game The current game being played
+     * @return True : the game has been won, False : the accusation was wrong
+     */
+    public boolean resolveAccusation(Object[] discoveraccu, Game game) {
+    	boolean gamewon = true;
+    	for(int i = 0; i<3; i++) {
+    		if(!discoveraccu[i].equals(game.murderinfo[i])) {gamewon = false;}
+    	}
+    	return gamewon;
+    }
+    /**
      * Runs the game
      * @param args
      */
@@ -497,6 +571,7 @@ public class Game {
     	   //First thing to do is prepare all of our objects
 	       Game game = new Game();
 	       //need to add the graphics stuff in here
+	       boolean gamewon = false;
 	       game.winner = null;
 	       int playerindex = 1;
 	       game.initiliseBoard();
@@ -510,11 +585,13 @@ public class Game {
 	       game.giveCards(allrooms, allweapons, allpersons);
 	       game.placeWeapons(game);
 	       //now we can begin the game
-	       while(game.winner == null) {
+	       while(!gamewon) {
 	    	   //The game loop will keep running until someone wins
 	    	   //makes sure we are rotating through the players
 	    	   int currentplayerindex = (playerindex % game.players.size()) - 1;
 	    	   Player currentplayer = game.players.get(currentplayerindex);
+	    	   //if the player has already lost, they dont get a turn
+	    	   if(!currentplayer.canplay) {continue;}
 	    	   System.out.println("Curret player : Player " + (currentplayerindex + 1));
 	    	   int steps = game.diceRoll();
 	    	   game.movePlayer(currentplayer, steps);
@@ -534,13 +611,15 @@ public class Game {
 	           }
 	           System.out.println("Would you like to make a accusation? (Please type 'yes' if you would like too)");
 	           String accu = game.input.nextLine();
-	           //up to here
-	           if(accu.equals("yes") && currentplayer.getLocation().getRoom() != null) {
-	        	   game.accusation(accusa, currentplayer);
+	           if(accu.equals("yes")) {
+	        	   Object[] discoveraccu = game.discoverAccusation(game, currentplayer);
+                   gamewon = game.resolveAccusation(discoveraccu, game);
+                   //either the player has won, or they are now not allowed to play
+                   if(gamewon) {game.winner = currentplayer;}
+                   else {currentplayer.canplay = false;}
 	           }
 	    	   playerindex++;
 	       }
 	       System.out.println("Congulations Player " + (game.players.indexOf(game.winner) + 1));
    }
 }
-
