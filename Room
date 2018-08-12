@@ -1,20 +1,26 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-
+import java.util.Set;
+/**
+ * Represents the the different rooms on the board. Holds information about the locations and objects held within the room. 
+ * @author hildrecall and rehanmidh
+ *
+ */
 public class Room {
-  //Represents the different rooms on the board
-  //Contains name and a list of the locations that sit within
   String name;
   List<Location> entrys;
-  List<Weapon> weapons = new ArrayList<Weapon>();
-  List<Person> people = new ArrayList<Person>();
+  Set<Weapon> weapons = new HashSet<Weapon>();
+  Set<Person> people = new HashSet<Person>();
   public Room(String name, List<Location> entrys) {
 	  this.name = name;
 	  this.entrys = entrys;
   }
-
+  
+  //getters 
+  
   public String getName() {return this.name;}
   public List<Location> getEntrys(){return entrys;}
-  public List<Weapon> getWeapons(){return weapons;}
-  public List<Person> getPeople(){return people;}
+  public Set<Weapon> getWeapons(){return weapons;}
+  public Set<Person> getPeople(){return people;}
 }
