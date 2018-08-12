@@ -1,11 +1,18 @@
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Represents the different locations that make up the board. Contains information about the objects that may be on these locations, as well as their accesibility and
+ * their absolute positions on the board.
+ * @author hildrecall and rehanmidh
+ *
+ */
 class Location {
-  //Represents the individual locations on the board
-  //Contains information about what kinds of objects might be on/contain the location
+
   int x;
   int y;
-  Weapon weapon = null;
-  Person person = null;
+  List<Weapon> weapon = new ArrayList<Weapon>();
+  List<Person> person = null;
   Room room = null;
   Player player = null;
   Boolean access = true;
@@ -18,10 +25,8 @@ class Location {
 
   public int getX() {return this.x;}
   public int getY() {return this.y;}
-  public Weapon getWeapon(){return this.weapon;}
-  public void setWeapon(Weapon w) {this.weapon = w;}
-  public Person getPerson() {return this.person;}
-  public void setPerson(Person p) {this.person = p;}
+  public List<Weapon> getWeapon(){return this.weapon;}
+  public List<Person> getPerson() {return this.person;}
   public Room getRoom() {return this.room;}
   public void setRoom(Room r) {this.room = r;}
   public Player getPlayer() {return this.player;}
