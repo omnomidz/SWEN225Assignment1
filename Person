@@ -1,14 +1,21 @@
-
+/**
+ * Represents the different characters in the game. Holds information about their locations and name.
+ * @author hildrecall and rehanmidh
+ *
+ */
 public class Person {
-  //Represents the game characters
-  //Contains name and the starting location of the person
+
   String name;
-  Location startinglocation;
+  Location location;
   public Person(String name, Location location) {
 	  this.name = name;
-	  startinglocation = location;
+	  this.location = location;
   }
 
   public String getName() {return this.name;}
-  public Location getStart() {return this.startinglocation;}
-}
+  public Location getStart() {return this.location;}
+  
+  public char getInitial() {
+	  return name.charAt(0);
+  }
+} 
