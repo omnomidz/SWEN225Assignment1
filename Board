@@ -137,31 +137,6 @@ public class Board {
 		return board[x][y];
 	}
 	
-	/*public String drawBoard() {
-		String board = "";
-		for (int i = 0; i < 24; i++) {
-			for (int j = 0; j < 25; j++) {
-				if(getLocation(i, j).getRoom() != null) {
-					board += " ";
-				}
-				else if (getLocation(i, j).getWeapon() != null) {
-					board += "X";
-				}
-				else if (getLocation(i, j).getPerson() != null) {
-					board +=  getLocation(i, j).getPerson().getInitial();
-				}
-				else if (getLocation(i, j).getPlayer() != null) {
-					board += getLocation(i, j).getPlayer().getPerson().getInitial();
-				}
-				else {
-					board += "|";
-				}
-				
-			}		
-		}
-		return board;
-	}*/
-	
     /**
      * Draws the board
      * @param g The graphics that we are drawing the board to. 
@@ -182,12 +157,12 @@ public class Board {
 				else if (getLocation(i, j).getPerson() != null) {
 					g.setColor(Color.orange);
 					g.drawRect(i, j, width, height);
-					g.drawString(getLocation(i, j).getPerson().getInitial(), i, j);
+					g.drawString(String.valueOf(((Person) getLocation(i, j).getPerson()).getInitial()), i, j);
 				}
 				else if (getLocation(i, j).getPlayer() != null) {
 					g.setColor(Color.green);
 					g.drawRect(i, j, width, height);
-					g.drawString(getLocation(i, j).getPlayer().getPerson().getInitial(), i, j);
+					g.drawString(String.valueOf(getLocation(i, j).getPlayer().getPerson().getInitial()), i, j);
 				}
 				else {
 					
@@ -197,4 +172,3 @@ public class Board {
     	}
     }
 }
-  
