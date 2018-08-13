@@ -150,8 +150,10 @@ public class Game {
 		}
 		if(move) {
 			p.setLocation(board.getLocation(x - distance, y));
-			board.getLocation(x - distance, y).player.remove(p);
-			board.getLocation(x - distance, y).person.remove(p.getPerson());
+			board.getLocation(x, y).player.remove(p);
+			board.getLocation(x, y).person.remove(p.getPerson());
+			board.getLocation(x - distance, y).player.add(p);
+			board.getLocation(x - distance, y).person.add(p.getPerson());
 			p.getPerson().setLocation(board.getLocation(x - distance, y));
 		}
 		return move;
@@ -177,8 +179,10 @@ public class Game {
 		}
 		if(move) {
 			p.setLocation(board.getLocation(x + distance, y));
-			board.getLocation(x + distance, y).player.remove(p);
-			board.getLocation(x + distance, y).person.remove(p.getPerson());
+			board.getLocation(x, y).player.remove(p);
+			board.getLocation(x, y).person.remove(p.getPerson());
+			board.getLocation(x + distance, y).player.add(p);
+			board.getLocation(x + distance, y).person.add(p.getPerson());
 			p.getPerson().setLocation(board.getLocation(x + distance, y));
 		}
 		return move;
@@ -204,8 +208,10 @@ public class Game {
 		}
 		if(move) {
 			p.setLocation(board.getLocation(x, y + distance));
-			board.getLocation(x, y + distance).player.remove(p);
-			board.getLocation(x, y + distance).person.remove(p.getPerson());
+			board.getLocation(x, y).player.remove(p);
+			board.getLocation(x, y).person.remove(p.getPerson());
+			board.getLocation(x, y + distance).player.add(p);
+			board.getLocation(x, y + distance).person.add(p.getPerson());
 			p.getPerson().setLocation(board.getLocation(x, y + distance));
 		}
 		return move;
@@ -231,8 +237,10 @@ public class Game {
 		}
 		if(move) {
 			p.setLocation(board.getLocation(x, y - distance));
-			board.getLocation(x, y - distance).player.remove(p);
-			board.getLocation(x, y - distance).person.remove(p.getPerson());
+			board.getLocation(x, y).player.remove(p);
+			board.getLocation(x, y).person.remove(p.getPerson());
+			board.getLocation(x, y - distance).player.add(p);
+			board.getLocation(x, y - distance).person.add(p.getPerson());
 			p.getPerson().setLocation(board.getLocation(x, y - distance));
 		}
 		return move;
@@ -443,7 +451,7 @@ public class Game {
     	//Finding the weapon suggestion
     	while(suggestweapon == null) {
     	   System.out.println("Which weapon would you like to check?");
-    	   String wep = game.input.nextLine();
+    	   String wep = game.input.next();
     	   for(Weapon w : game.weapons) {
     		   if(w.getName().equals(wep) || w.getName().toLowerCase().equals(wep)) {
     			   suggestweapon = w;
@@ -457,7 +465,7 @@ public class Game {
      	   System.out.println("Which person would you like to check?");
      	   String person = game.input.nextLine();
      	   for(Person a : game.people) {
-     		   if(a.getName().equals(person)|| a.getName().toLowerCase().equals(person)) {
+     		   if(a.getName().equals(person) || a.getName().toLowerCase().equals(person)) {
      			   suggestperson = a;
      			   suggestroom.entrys.get(0).person.add(a);
      			   a.location = suggestroom.entrys.get(0);
@@ -501,7 +509,7 @@ public class Game {
     	//Finding the weapon accuastion
     	while(accusationweapon == null) {
     	   System.out.println("Which weapon would you like to accuse?");
-    	   String wep = game.input.nextLine();
+    	   String wep = game.input.next();
     	   for(Weapon w : game.weapons) {
     		   if(w.getName().equals(wep)|| w.getName().toLowerCase().equals(wep)) {
     			   accusationweapon = w;
@@ -549,12 +557,11 @@ public class Game {
             	int choice;
             	System.out.println("Player " + (target + 1) + ", please select the index of the option you would like to share");
             	//cycle through the targetchoices and print real values
-            	//can cast to Room, as all the objects have getName() methods so nothing will go wrong
-            	for(int j = 0; j<3; j++) {
-            		if(discover[j] != null) {System.out.println(j + " : " + ((Room) discover[j]).getName());}
-            	}
+                if(targetchoices[0] != null) {System.out.println("0" + " : " + ((Room) targetchoices[0]).getName());}
+                if(targetchoices[1] != null) {System.out.println("1" + " : " + ((Weapon) targetchoices[1]).getName());}
+                if(targetchoices[2] != null) {System.out.println("2" + " : " + ((Person) targetchoices[2]).getName());}
                 //assuming a correct response from our user
-                choice = Integer.parseInt(game.input.nextLine());
+                choice = Integer.parseInt(game.input.next());
                 //now we add it to our player
                 if(choice == 0) {p.knownrooms.add((Room) targetchoices[0]);}
                 else if(choice == 1) {p.knownweapons.add((Weapon) targetchoices[1]);}
@@ -565,7 +572,6 @@ public class Game {
             }
     	}
     	//if we get here, it means no one had a matching card
-    	System.out.println("No one has a matching card");
     }
     /**
      * Decides if the game has won. Compares the accusation array against the murderinfo array and returns a
@@ -597,9 +603,18 @@ public class Game {
 	       game.initiliseWeapons();
 	       game.initilisePersons();
 	       game.createPlayers();
-	       List<Room> allrooms = game.rooms;
-	       List<Weapon> allweapons = game.weapons;
-	       List<Person> allpersons = game.people;
+	       List<Room> allrooms = new ArrayList<Room>();
+	       List<Weapon> allweapons = new ArrayList<Weapon>();
+	       List<Person> allpersons = new ArrayList<Person>();
+	       for(Room r : game.rooms) {
+	    	   allrooms.add(r);
+	       }
+	       for(Weapon w : game.weapons) {
+	    	   allweapons.add(w);
+	       }
+	       for(Person p : game.people) {
+	    	   allpersons.add(p);
+	       }
 	       game.createMurderInfo(allrooms, allweapons, allpersons);
 	       game.giveCards(allrooms, allweapons, allpersons);
 	       game.placeWeapons(game);
@@ -623,8 +638,8 @@ public class Game {
 	        	   game.printInfo(currentplayer);
 	           }
 	           System.out.println("Would you like to make a suggestion? (Please type 'yes' if you would like too)");
-	           if(currentplayer.getLocation().getRoom() == null) {System.out.print("Sorry, but you are not in a room");}
 	           String suggest = game.input.next();
+	           if(currentplayer.getLocation().getRoom() == null) {System.out.print("Sorry, but you are not in a room\n");}
 	           if(suggest.equals("yes") && currentplayer.getLocation().getRoom() != null) {
 	        	   Object[] discover = game.discoverSuggestion(game, currentplayer);
 	        	   game.resolveSuggest(currentplayer, game, discover);
