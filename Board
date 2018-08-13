@@ -12,14 +12,15 @@ public class Board {
 	private Location[][] board;
 
 	/**
-	 * The constructor. It creates all the locations, as well as sorting them into rooms and inaccessable areas. 
+	 * The constructor. It creates all the locations, as well as sorting them into rooms and inaccessable areas.
 	 * @param rooms A list of all the rooms on the board
 	 */
 	public Board(List<Room> rooms) {
 		// initilising all the locations on the board, as well as any values those
 		// loactions might have
-		for (int i = 0; i < 24; i++) {
-			for (int j = 0; j < 25; j++) {
+		board = new Location[25][24];
+		for (int i = 0; i < 25; i++) {
+			for (int j = 0; j < 24; j++) {
 				board[i][j] = new Location(i, j);
 			}
 		}
@@ -125,7 +126,7 @@ public class Board {
 		board[16][0].setAccess(false);
 		board[18][0].setAccess(false);
 	}
-   
+
 	public Location[][] getBoard() {
 		return this.board;
 	}
@@ -136,29 +137,34 @@ public class Board {
 		}
 		return board[x][y];
 	}
-	
-   /**
+
+	/**
 	 * Draws the board
 	 * @return
 	 */
 	public String drawBoard() {
 		String board = "";
-		for (int i = 0; i < 24; i++) {
-			for (int j = 0; j < 25; j++) {
-				if(getLocation(i, j).getRoom() != null) {
-					board += " ";
+		for (int i = 0; i < 25; i++) {
+			for (int j = 0; j < 24; j++) {
+				char space = ' ';
+				if(!getLocation(i, j).getAccess()) {
+					space =  'O';
 				}
-				else if (getLocation(i, j).getWeapon() != null) {
-					board += "X";
+				if (!getLocation(i, j).getWeapon().isEmpty()) {
+					space =  'X';
 				}
-				else if (getLocation(i, j).getPlayer() != null) {
-					board += getLocation(i, j).getPlayer().getPerson().getInitial();
+				if (!getLocation(i, j).person.isEmpty()) {
+					space =  getLocation(i, j).person.get(0).getInitial();
 				}
-				else {
-					board += "|";
+				if (!getLocation(i, j).player.isEmpty()) {
+					space =  getLocation(i, j).player.get(0).getPerson().getInitial();
 				}
-				
-			}		
+				board += space;
+				if(getLocation(i, j).getRoom() != null) {board += "/";}
+				else{board += "|";}
+
+			}
+			board += "\n";
 		}
 		return board;
 	}
