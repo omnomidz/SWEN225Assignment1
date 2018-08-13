@@ -1,0 +1,256 @@
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+
+/**
+ * This class will allow us to test various parts of the code to show they work, even if our program isn't
+ * exactly perfect :)
+ *
+ * @author hildrecall and rehanmidh
+ *
+ * A few notes about the testing
+ * 1 : Our code often produces random result (i.e dicerolls and giving cards). it is hard to reflect that in
+ *     tests, but hopefully what I have done shows that the code is correct
+ * 2 : Our methods take alot of input from the user in the method and then uses it, so it is hard to create
+ *     tests that can represent what happens when different input is put in. Instead, it is down to the
+ *     tester to input the inputs they would like to check, so feel free to test anything you like where you
+ *     want! (I was unable to figure out how to automate input)
+ *     I have added notes reccommending which input to use to check that it works
+ */
+public class CludeoTests {
+
+	@Test
+	//Tests whether the rooms were initilised and added into the game
+	void testInitiliseBoard() {
+		Game game = new Game();
+		game.initiliseBoard();
+		List<String> roomnames = new ArrayList<String>(Arrays.asList("Kitchen", "Ballroom", "Conservatory", "Billiard Room", "Library", "Study", "Hall", "Lounge", "Dining Room"));
+	    for(int i = 0; i<9; i++) {
+	    	assertTrue(game.rooms.get(i).getName() == roomnames.get(i));
+	    	assertTrue(!game.rooms.get(i).entrys.isEmpty());
+	    }
+	}
+
+	@Test
+	//Tests the creation of locations (not very important but I was using it just to make sure as another test was failing
+	void testLocation() {
+		Location l = new Location(0,0);
+		assertTrue(l != null);
+	}
+
+	@Test
+	//Tests the creation and placement of weapons
+	void testInitiliseWeapons() {
+		Game game = new Game();
+		game.initiliseBoard();
+		game.initiliseWeapons();
+		List<String> weaponnames = new ArrayList<String>(Arrays.asList("Candlestick", "Dagger", "Lead Pipe", "Revolver", "Rope", "Spanner"));
+		for(int i = 0; i<6; i++) {
+			assertTrue(weaponnames.get(i).equals(game.weapons.get(i).getName()));
+		}
+		game.placeWeapons(game);
+		for(int i = 0; i<6; i++) {
+			assertTrue(game.weapons.get(i).getLocation() != null);
+		}
+	}
+
+	@Test
+	//Tests the creation and placement of characters
+	void testInitilisePersons() {
+		Game game = new Game();
+		game.initiliseBoard();
+		game.initilisePersons();
+		List<String> personnames = new ArrayList<String>(Arrays.asList("Miss Scarlet", "Colonel Mustard", "Mrs White", "Mr Green", "Mrs Peacock", "Professor Plum"));
+		for(int i = 0; i< 6; i++) {
+			assertTrue(game.people.get(i).getName().equals(personnames.get(i)));
+		}
+		assertTrue(game.people.get(0).getStart().equals(game.getBoard().getLocation(24, 7)));
+		assertTrue(game.people.get(1).getStart().equals(game.getBoard().getLocation(17, 0)));
+		assertTrue(game.people.get(2).getStart().equals(game.getBoard().getLocation(0, 9)));
+		assertTrue(game.people.get(3).getStart().equals(game.getBoard().getLocation(0, 14)));
+		assertTrue(game.people.get(4).getStart().equals(game.getBoard().getLocation(6, 23)));
+		assertTrue(game.people.get(5).getStart().equals(game.getBoard().getLocation(19, 23)));
+	}
+
+	@Test
+	//Tests auxillary method in Person to do with the characters name
+	void testPersonFirstLetter() {
+		Game game = new Game();
+		game.initiliseBoard();
+		game.initilisePersons();
+		assertTrue(game.people.get(0).getInitial() == 'S');
+	}
+
+	@Test
+	//Tests that objects are added to the murderinfo and that they are removed from the lists of objects used to give knowledge to the players
+	void testMurderInfo() {
+		Game game = new Game();
+		game.initiliseBoard();
+		game.initiliseWeapons();
+		game.initilisePersons();
+		game.createPlayers();
+	    List<Room> allrooms = game.rooms;
+	    List<Weapon> allweapons = game.weapons;
+	    List<Person> allpersons = game.people;
+	    game.createMurderInfo(allrooms, allweapons, allpersons);
+	    assertTrue(game.murderinfo[0] instanceof Room);
+	    assertTrue(game.murderinfo[1] instanceof Weapon);
+	    assertTrue(game.murderinfo[2] instanceof Person);
+	    assertFalse(allrooms.contains(game.murderinfo[0]));
+	    assertFalse(allweapons.contains(game.murderinfo[1]));
+	    assertFalse(allpersons.contains(game.murderinfo[2]));
+	}
+
+	@Test
+	//Tests that all objects have been dealt to the players after the murder objects have been removed, and that each player has atleast a single object of each type
+	void testGiveCards() {
+		Game game = new Game();
+		game.initiliseBoard();
+		game.initiliseWeapons();
+		game.initilisePersons();
+		game.createPlayers();
+	    List<Room> allrooms = game.rooms;
+	    List<Weapon> allweapons = game.weapons;
+	    List<Person> allpersons = game.people;
+	    game.createMurderInfo(allrooms, allweapons, allpersons);
+	    game.giveCards(allrooms, allweapons, allpersons);
+	    assertTrue(allrooms.isEmpty());
+	    assertTrue(allweapons.isEmpty());
+	    assertTrue(allpersons.isEmpty());
+	    Set<Room> knownrooms = new HashSet<Room>();
+	    Set<Weapon> knownweapons = new HashSet<Weapon>();
+	    Set<Person> knownpersons = new HashSet<Person>();
+	    for(int i = 0; i < game.players.size(); i++) {
+	    	Player current = game.players.get(i);
+	    	if(!current.startpersons.isEmpty()) {
+	    		for(Person p : current.startpersons) {
+	    			knownpersons.add(p);
+	    		}
+	    	}
+	    	if(!current.startweapons.isEmpty()) {
+	    		for(Weapon w : current.startweapons) {
+	    			knownweapons.add(w);
+	    		}
+	    	}
+	    	if(!current.startrooms.isEmpty()) {
+	    		for(Room r : current.startrooms) {
+	    			knownrooms.add(r);
+	    		}
+	    	}
+	    }
+	    assertFalse(knownrooms.isEmpty());
+	    assertFalse(knownweapons.isEmpty());
+	    assertFalse(knownpersons.isEmpty());
+
+	}
+
+	@Test
+	//Tests the diceroll gives us a int between 2 and 12
+	//Ill run this a few times to give a range of possible results
+	void testDiceRoll() {
+		Game game = new Game();
+		int roll = game.diceRoll();
+		assertTrue(roll >= 2 && roll <= 12);
+		System.out.println(roll);
+		roll = game.diceRoll();
+		assertTrue(roll >= 2 && roll <= 12);
+		System.out.println(roll);
+		roll = game.diceRoll();
+		assertTrue(roll >= 2 && roll <= 12);
+		System.out.println(roll);
+	}
+
+	@Test
+	//Tests discoverSuggestion(), to make sure correct objects are chosen and returned
+	void testDiscoverSuggestion() {
+		Game game = new Game();
+		game.initiliseBoard();
+		game.initiliseWeapons();
+		game.initilisePersons();
+		game.createPlayers();
+		Player p = new Player(game.people.get(0));
+		p.setLocation(game.getBoard().getLocation(2, 3));
+		Object choices[] = new Object[3];
+		//For this test to pass, make sure the correct obejects you enter are "Dagger" and "Mr Green"
+		choices = game.discoverSuggestion(game, p);
+		assertTrue(choices[0] instanceof Room);
+		assertTrue(((Room) choices[0]).getName().equals("Kitchen"));
+		assertTrue(choices[1] instanceof Weapon);
+		assertTrue(((Weapon) choices[1]).getName().equals("Dagger"));
+		assertTrue(choices[2] instanceof Person);
+		assertTrue(((Person) choices[2]).getName().equals("Mr Green"));
+	}
+
+	@Test
+	//Tests the that a refuted suggestion has the proper results
+    void testRefutedSuggestion() {
+
+	}
+
+	@Test
+	//Tests discoverAccusation(), to make sure the correct objects are chosen and returned
+    void testDiscoverAccusation() {
+		Game game = new Game();
+		game.initiliseBoard();
+		game.initiliseWeapons();
+		game.initilisePersons();
+		Player p = new Player(game.people.get(0));
+		Object choices[] = new Object[3];
+		//For this test to pass, make sure the correct obejects you enter are "Kitchen", "Dagger" and "Mr Green"
+		choices = game.discoverAccusation(game, p);
+		assertTrue(choices[0] instanceof Room);
+		assertTrue(((Room) choices[0]).getName().equals("Kitchen"));
+		assertTrue(choices[1] instanceof Weapon);
+		assertTrue(((Weapon) choices[1]).getName().equals("Dagger"));
+		assertTrue(choices[2] instanceof Person);
+		assertTrue(((Person) choices[2]).getName().equals("Mr Green"));
+	}
+
+	@Test
+	//Tests that a successfull accusation has a proper results
+	void testSuccesfullAccusation() {
+		Game game = new Game();
+		game.initiliseBoard();
+		game.initiliseWeapons();
+		game.initilisePersons();
+		Object murder[] = new Object[3];
+		Object choices[] = new Object[3];
+		murder[0] = game.rooms.get(0);
+		murder[1] = game.weapons.get(0);
+		murder[2] = game.people.get(0);
+		choices[0] = game.rooms.get(0);
+		choices[1] = game.weapons.get(0);
+		choices[2] = game.people.get(0);
+		game.murderinfo = murder;
+		assertTrue(game.resolveAccusation(choices, game));
+	}
+
+	@Test
+	//Tests that a wrong accusation has a proper results
+	void testWrongAccusation() {
+		Game game = new Game();
+		game.initiliseBoard();
+		game.initiliseWeapons();
+		game.initilisePersons();
+		Object murder[] = new Object[3];
+		Object choices[] = new Object[3];
+		murder[0] = game.rooms.get(0);
+		murder[1] = game.weapons.get(0);
+		murder[2] = game.people.get(1);
+		choices[0] = game.rooms.get(0);
+		choices[1] = game.weapons.get(0);
+		choices[2] = game.people.get(0);
+		game.murderinfo = murder;
+		assertFalse(game.resolveAccusation(choices, game));
+	}
+
+
+
+}
