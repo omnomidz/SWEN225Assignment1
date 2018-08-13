@@ -137,38 +137,29 @@ public class Board {
 		return board[x][y];
 	}
 	
-    /**
-     * Draws the board
-     * @param g The graphics that we are drawing the board to. 
-     */
-    public void paint(Graphics g) {
-    	for (int i = 0; i < 24; i++) {
+   /**
+	 * Draws the board
+	 * @return
+	 */
+	public String drawBoard() {
+		String board = "";
+		for (int i = 0; i < 24; i++) {
 			for (int j = 0; j < 25; j++) {
-				int width = 2;
-				int height = 2;
 				if(getLocation(i, j).getRoom() != null) {
-					g.setColor(Color.gray);
-					g.drawRect(i, j, width, height);
+					board += " ";
 				}
 				else if (getLocation(i, j).getWeapon() != null) {
-					g.setColor(Color.RED);
-					g.drawRect(i, j, width, height);
-				}
-				else if (getLocation(i, j).getPerson() != null) {
-					g.setColor(Color.orange);
-					g.drawRect(i, j, width, height);
-					g.drawString(String.valueOf(((Person) getLocation(i, j).getPerson()).getInitial()), i, j);
+					board += "X";
 				}
 				else if (getLocation(i, j).getPlayer() != null) {
-					g.setColor(Color.green);
-					g.drawRect(i, j, width, height);
-					g.drawString(String.valueOf(getLocation(i, j).getPlayer().getPerson().getInitial()), i, j);
+					board += getLocation(i, j).getPlayer().getPerson().getInitial();
 				}
 				else {
-					
+					board += "|";
 				}
 				
-			}
-    	}
-    }
+			}		
+		}
+		return board;
+	}
 }
