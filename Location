@@ -12,9 +12,9 @@ class Location {
   int x;
   int y;
   List<Weapon> weapon = new ArrayList<Weapon>();
-  List<Person> person = null;
+  List<Person> person = new ArrayList<Person>();
   Room room = null;
-  Player player = null;
+  List<Player> player = new ArrayList<Player>();
   Boolean access = true;
 
   public Location(int x, int y) {
@@ -29,8 +29,5 @@ class Location {
   public List<Person> getPerson() {return this.person;}
   public Room getRoom() {return this.room;}
   public void setRoom(Room r) {this.room = r;}
-  public Player getPlayer() {return this.player;}
-  public void setPlayer(Player p) {this.player = p;}
   public boolean getAccess() {return access;}
   public void setAccess(boolean b) {access = b;}
-}
