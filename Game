@@ -13,6 +13,8 @@ import java.util.Scanner;
  * as there is only ever going to be one game object
  *
  * @author hildrecall and rehanmidh
+ * 
+ * Currently it is pretty broken. Accusation doesn;t really work if they get it wonrg
  */
 public class Game {
 
