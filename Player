@@ -11,17 +11,18 @@ import java.util.Set;
  */
 
 public class Player {
-
+    Boolean canplay = true;
 	Location location;
 	Person person;
 	//We are using sets to imitate cards, allowing us to work with the objects themselves
+	//startobject refers to their 'cards', whereas knownobject refers to all the objects they know about
 	Set<Weapon> startweapons = new HashSet<Weapon>();
 	Set<Room> startrooms = new HashSet<Room>();
 	Set<Person> startpersons = new HashSet<Person>();
 	Set<Weapon> knownweapons = new HashSet<Weapon>();
 	Set<Room> knownrooms = new HashSet<Room>();
 	Set<Person> knownpersons = new HashSet<Person>();
-	
+
 	public Player(Person person) {
 		this.person = person;
 		this.location = person.location;
