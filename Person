@@ -16,6 +16,7 @@ public class Person {
   public Location getStart() {return this.location;}
   
   public char getInitial() {
-	  return name.charAt(0);
+	  String splitname[] = name.split(" ");
+	  return splitname[1].charAt(0);
   }
 } 
