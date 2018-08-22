@@ -175,6 +175,35 @@ public class GUI extends JFrame {
 				//first initilise the possible choices latter on
 				Object[] numofplayers = {2,3,4,5,6};
 				List<Person> personoptions = game.clonePeople();
+				//creates a radio box containing the possible options
+				//we use a Jpanel for display, and a buttongroup to maintain deselect
+				JPanel choose = new JPanel();
+				ButtonGroup personradio = new ButtonGroup();
+				JRadioButton scarlett = new JRadioButton("Miss Scarlet");
+				JRadioButton mustard = new JRadioButton("Colonel Mustard");
+				JRadioButton white = new JRadioButton("Mrs White");
+				JRadioButton green = new JRadioButton("Mr Green");
+				JRadioButton peacock = new JRadioButton("Mrs Peacock");
+				JRadioButton plum = new JRadioButton("Professor Plum");
+				scarlett.setVisible(true);
+				mustard.setVisible(true);
+				white.setVisible(true);
+				green.setVisible(true);
+				peacock.setVisible(true);
+				plum.setVisible(true);
+				personradio.add(scarlett);
+				personradio.add(mustard);
+				personradio.add(white);
+				personradio.add(green);
+				personradio.add(peacock);
+				personradio.add(plum);
+				choose.add(scarlett);
+				choose.add(mustard);
+				choose.add(white);
+				choose.add(green);
+				choose.add(peacock);
+				choose.add(plum);
+				
 				//finds out how many players will be playing
 				int choice = (Integer)JOptionPane.showInputDialog(frame,
 					    "Welcome to Cluedo! How many people would like to play?	",
@@ -185,7 +214,7 @@ public class GUI extends JFrame {
 					    2);
 				for(int i = 0; i<choice; i++) {
 					//for each player, allows them to select a name
-					String name;
+					String name = "";
 					JTextField entername = new JTextField();
 					int namechoice = JOptionPane.showConfirmDialog(frame,
 							entername,
@@ -195,15 +224,36 @@ public class GUI extends JFrame {
 						name = entername.getText();
 					}
                     //then allows each player to select a person
-					//creates a radio box that will add radio buttons depending on how many unchosen options there are
-					ButtonGroup personselect = new ButtonGroup();
-					for(int j = 0; j <personoptions.size(); j++) {
-						JRadioButton button = new JRadioButton(personoptions.get(i).getName());
+					JOptionPane.showConfirmDialog(frame,
+							choose,
+							"Select your character",
+							JOptionPane.PLAIN_MESSAGE);
+					//make the chosen radio button unvisable and create the new player
+					if(scarlett.isSelected()) {
+						scarlett.setVisible(false);
+						game.createNewPlayer(name, personoptions.get(0));
 					}
-
-
-
-					//game.createNewPlayer(name, person);
+					if(mustard.isSelected()) {
+						mustard.setVisible(false);
+						game.createNewPlayer(name, personoptions.get(1));
+					}
+					if(white.isSelected()) {
+						white.setVisible(false);
+						game.createNewPlayer(name, personoptions.get(2));
+					}
+					if(green.isSelected()) {
+						green.setVisible(false);
+						game.createNewPlayer(name, personoptions.get(3));
+					}
+					if(peacock.isSelected()) {
+						peacock.setVisible(false);
+						game.createNewPlayer(name, personoptions.get(4));
+					}
+					if(plum.isSelected()) {
+						plum.setVisible(false);
+						game.createNewPlayer(name, personoptions.get(5));
+					}
+					
 				}
 
 				//game.redraw();
