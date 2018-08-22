@@ -8,10 +8,10 @@ import java.util.Set;
  *
  */
 public class Room {
-  String name;
-  List<Location> entrys;
-  Set<Weapon> weapons = new HashSet<Weapon>();
-  Set<Person> people = new HashSet<Person>();
+  private String name;
+  private List<Location> entrys;
+  private Set<Weapon> weapons = new HashSet<Weapon>();
+  private Set<Person> people = new HashSet<Person>();
   public Room(String name, List<Location> entrys) {
 	  this.name = name;
 	  this.entrys = entrys;
