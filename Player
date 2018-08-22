@@ -11,9 +11,10 @@ import java.util.Set;
  */
 
 public class Player {
-    Boolean canplay = true;
-	Location location;
-	Person person;
+    private Boolean canplay = true;
+    private Location location;
+    private Person person;
+	private int movement;
 	//We are using sets to imitate cards, allowing us to work with the objects themselves
 	//startobject refers to their 'cards', whereas knownobject refers to all the objects they know about
 	Set<Weapon> startweapons = new HashSet<Weapon>();
@@ -26,6 +27,7 @@ public class Player {
 	public Player(Person person) {
 		this.person = person;
 		this.location = person.location;
+		movement = 0;
 	}
 
     //getters and setters
@@ -33,4 +35,8 @@ public class Player {
     public void setPerson(Person person) {this.person = person;}
     public Location getLocation() {return location;}
     public void setLocation(Location l) {location = l;}
+    public int getMovement() {return movement;}
+    public void setMovement(int m) {movement = m;}
+    public boolean getCanPlay() {return canplay;}
+    public void setCanPlay(Boolean b) {canplay = b;}
 }
