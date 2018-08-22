@@ -15,6 +15,7 @@ public class Player {
     private Location location;
     private Person person;
 	private int movement;
+	private String name;
 	//We are using sets to imitate cards, allowing us to work with the objects themselves
 	//startobject refers to their 'cards', whereas knownobject refers to all the objects they know about
 	Set<Weapon> startweapons = new HashSet<Weapon>();
@@ -24,13 +25,16 @@ public class Player {
 	Set<Room> knownrooms = new HashSet<Room>();
 	Set<Person> knownpersons = new HashSet<Person>();
 
-	public Player(Person person) {
+	public Player(String name, Person person) {
 		this.person = person;
 		this.location = person.location;
+		this.name = name;
 		movement = 0;
 	}
 
     //getters and setters
+	public String getName() {return name;}
+	public void setName(String name) {this.name = name;}
     public Person getPerson() {return person;}
     public void setPerson(Person person) {this.person = person;}
     public Location getLocation() {return location;}
