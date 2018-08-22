@@ -5,8 +5,8 @@
  */
 class Weapon {
 
-  String name;
-  Location location = null;
+  private String name;
+  private Location location = null;
   public Weapon(String name) {this.name = name;}
 
   //getters and setters
