@@ -13,7 +13,7 @@ import java.util.Scanner;
  * as there is only ever going to be one game object
  *
  * @author hildrecall and rehanmidh
- * 
+ *
  * Currently it is pretty broken. Accusation doesn;t really work if they get it wonrg
  */
 public class Game {
@@ -23,18 +23,41 @@ public class Game {
 	List<Weapon> weapons = new ArrayList<Weapon>();
 	List<Person> people = new ArrayList<Person>();
 	List<Player> players;
-	Scanner input = new Scanner(System.in);
 	//in order : Room - Weapon - Person
 	Object murderinfo[] = new Object[3];
 	Player winner;
+	Player currentplayer;
+	//current players actions
+	boolean dicerolled = false;
+	boolean suggestionplayed = false;
+	boolean accustaionplayed = false;
 
 	public Board getBoard() {
 		return board;
 	}
 	/**
 	 * The game object with where the game is run from. It keeps track of all the objects in and on the board, and has a min function where the game is played.
+	 * All non-player object are initilised
 	 */
-	public Game(){}
+	public Game(){
+		initiliseBoard();
+	    initiliseWeapons();
+	    initilisePersons();
+	    List<Room> allrooms = new ArrayList<Room>();
+	    List<Weapon> allweapons = new ArrayList<Weapon>();
+	    List<Person> allpersons = new ArrayList<Person>();
+	    for(Room r : rooms) {
+     	   allrooms.add(r);
+        }
+	    for(Weapon w : weapons) {
+	  	   allweapons.add(w);
+        }
+        for(Person p : people) {
+        	allpersons.add(p);
+	    }
+	    createMurderInfo(allrooms, allweapons, allpersons);
+        placeWeapons();
+	}
 
 	/**
      * This method creates all the weapons and adds them into the game
@@ -62,17 +85,19 @@ public class Game {
       people.add(new Person("Professor Plum", board.getLocation(19, 23)));
       this.people = people;
       for(Person p : people) {
-    	  p.location.person.add(p);
+    	  p.location.getPersons().add(p);
       }
 	}
 
-	public int diceRoll() {
+	public void diceRoll(Player p) {
 	/**
 	 * Returns the sum of two random integers between 1-6
 	 * @return an integer between 2 and 12
 	 */
+		if(dicerolled) {return;}
 		Random rand = new Random();
-		return (rand.nextInt(6) + 1) + (rand.nextInt(6) + 1);
+		int rando = (rand.nextInt(6) + 1) + (rand.nextInt(6) + 1);
+		p.setMovement(rando);
 	}
 	/**
 	 * This method creates all the rooms, and then initilises the board using our list of rooms
@@ -101,93 +126,76 @@ public class Game {
 		board = new Board(rooms);
 	}
 	/**
-	 * Controls the movement phase of each of the players. Players are given a number of steps they make take (the diceroll), and then are repetively asked how far they
-	 * would like to go and in which direction until they run out of steps.
+	 * Controls the movement phase of each of the players. Players move one step at a time while they mave movement steps available
 	 * @param p The current player
-	 * @param diceroll The total number of movement available
 	 */
-	public void movePlayer(Player p, int diceroll, Game game) {
-		while(diceroll>0){
-			boolean move = false;
-			System.out.println("Available steps : " + diceroll);
-			System.out.println("Which direction would like to move in? (enter either N, S, E, W)");
-			String direction = input.next();
-			System.out.println("How far would you like to move?");
-			int steps = Integer.parseInt(input.next());
-			if(steps > diceroll) {
-				System.out.println("Please enter a valid step count");
-				continue;
-			}
-			if(direction.equals("N") || direction.equals("n")) {move =  moveNorth(p, steps);}
-			else if(direction.equals("S") || direction.equals("s")) {move = moveSouth(p, steps);}
-			else if(direction.equals("E") || direction.equals("e")) {move =  moveEast(p, steps);}
-			else if(direction.equals("W") || direction.equals("w")) {move = moveWest(p, steps);}
-			else {System.out.println("Please enter a valid direction (enter either N, S, E, W)");}
-			//only change total steps if the player actually moves, as well as redrawing
-			if(move) {
-				diceroll -= steps;
-				System.out.println(game.board.drawBoard());
-			}
-
-		}
+	public void movePlayer(Player p, String m) {
+	  if(p.getMovement() > 0) {
+		  if(m == "North") {moveNorth(p);}
+		  else if(m == "South") {moveSouth(p);}
+		  else if(m == "East") {moveEast(p);}
+		  else if(m == "West") {moveWest(p);}
+	  }
 	}
     /**
      * Controls player movement upwards. Checks whether their movement commands are valid/possible.
      * @param p The current player
-     * @param distance How far the player can move
-     * @return A boolean describing whether the player moved or not
      */
-	public boolean moveNorth(Player p, int distance) {
+	public void moveNorth(Player p) {
 		boolean move = true;
 		int x = p.getLocation().x;
 		int y = p.getLocation().y;
-		for(int i = 1; i<= distance; i++) {
-			//check if the location is accessable, and then if the room entering is correct
-			if(!board.getLocation(x - i, y).getAccess()) {
-				move = false;
-			}
-			if(!enterRoom(p, "N") || !exitRoom(p, "N")) {
-				move = false;
-			}
+		//check if the location is accessable, and then if the room entering is correct
+		if(!board.getLocation(x - 1, y).getAccess()) {
+			move = false;
 		}
+		if(!enterRoom(p, "N") || !exitRoom(p, "N")) {
+			move = false;
+		}
+
 		if(move) {
-			p.setLocation(board.getLocation(x - distance, y));
-			board.getLocation(x, y).player.remove(p);
-			board.getLocation(x, y).person.remove(p.getPerson());
-			board.getLocation(x - distance, y).player.add(p);
-			board.getLocation(x - distance, y).person.add(p.getPerson());
-			p.getPerson().setLocation(board.getLocation(x - distance, y));
+			p.setLocation(board.getLocation(x - 1, y));
+			//remove person and player from location
+			board.getLocation(x, y).getPlayers().remove(p);
+			board.getLocation(x, y).getPersons().remove(p.getPerson());
+			//add person and player to new location
+			board.getLocation(x - 1, y).getPlayers().add(p);
+			board.getLocation(x - 1, y).getPersons().add(p.getPerson());
+			//move the person to the new position
+			p.getPerson().setLocation(board.getLocation(x - 1, y));
+			//reduce move count
+			p.setMovement(p.getMovement() - 1);
 		}
-		return move;
 	}
 	 /**
      * Controls player movement downwards. Checks whether their movement commands are valid/possible.
      * @param p The current player
-     * @param distance How far the player can move
-     * @return A boolean describing whether the player moved or not
      */
-    public boolean moveSouth(Player p, int distance) {
+    public void moveSouth(Player p) {
     	boolean move = true;
 		int x = p.getLocation().x;
 		int y = p.getLocation().y;
-		for(int i = 1; i<= distance; i++) {
-			//check if the location is accessable, and then if the room entering is correct
-			if(!board.getLocation(x + i, y).getAccess()) {
-				move = false;
-			}
-			if(!enterRoom(p, "S") || !exitRoom(p, "S")) {
-				move = false;
-			}
+		//check if the location is accessable, and then if the room entering is correct
+		if(!board.getLocation(x + 1, y).getAccess()) {
+			move = false;
 		}
+		if(!enterRoom(p, "S") || !exitRoom(p, "S")) {
+			move = false;
+		}
+
 		if(move) {
-			p.setLocation(board.getLocation(x + distance, y));
-			board.getLocation(x, y).player.remove(p);
-			board.getLocation(x, y).person.remove(p.getPerson());
-			board.getLocation(x + distance, y).player.add(p);
-			board.getLocation(x + distance, y).person.add(p.getPerson());
-			p.getPerson().setLocation(board.getLocation(x + distance, y));
+			p.setLocation(board.getLocation(x + 1, y));
+			//remove person and player from location
+			board.getLocation(x, y).getPlayers().remove(p);
+			board.getLocation(x, y).getPersons().remove(p.getPerson());
+			//add person and player to new location
+			board.getLocation(x + 1, y).getPlayers().add(p);
+			board.getLocation(x + 1, y).getPersons().add(p.getPerson());
+			//move the person to the new position
+			p.getPerson().setLocation(board.getLocation(x + 1, y));
+			//reduce move count
+			p.setMovement(p.getMovement() - 1);
 		}
-		return move;
 	}
     /**
      * Controls player movement to the right. Checks whether their movement commands are valid/possible.
@@ -195,28 +203,30 @@ public class Game {
      * @param distance How far the player can move
      * @return A boolean describing whether the player moved or not
      */
-    public boolean moveEast(Player p, int distance) {
+    public void moveEast(Player p) {
     	boolean move = true;
 		int x = p.getLocation().x;
 		int y = p.getLocation().y;
-		for(int i = 1; i<= distance; i++) {
-			//check if the location is accessable, and then if the room entering is correct
-			if(!board.getLocation(x, y + i).getAccess()) {
-				move = false;
-			}
-			if(!enterRoom(p, "E") || !exitRoom(p, "E")) {
-				move = false;
-			}
+		//check if the location is accessable, and then if the room entering is correct
+		if(!board.getLocation(x, y + 1).getAccess()) {
+			move = false;
 		}
+		if(!enterRoom(p, "E") || !exitRoom(p, "E")) {
+			move = false;
+		}
+
 		if(move) {
-			p.setLocation(board.getLocation(x, y + distance));
-			board.getLocation(x, y).player.remove(p);
-			board.getLocation(x, y).person.remove(p.getPerson());
-			board.getLocation(x, y + distance).player.add(p);
-			board.getLocation(x, y + distance).person.add(p.getPerson());
-			p.getPerson().setLocation(board.getLocation(x, y + distance));
+			p.setLocation(board.getLocation(x, y + 1));
+			//remove person and player from location
+			board.getLocation(x, y).getPlayers().remove(p);
+			board.getLocation(x, y).getPersons().remove(p.getPerson());
+			//add person and player to new location
+			board.getLocation(x, y + 1).getPlayers().add(p);
+			board.getLocation(x, y + 1).getPersons().add(p.getPerson());
+			//move the person to the new position
+			p.getPerson().setLocation(board.getLocation(x, y + 1));
+			p.setMovement(p.getMovement() - 1);
 		}
-		return move;
 	}
     /**
      * Controls player movement to the left. Checks whether their movement commands are valid/possible.
@@ -224,28 +234,30 @@ public class Game {
      * @param distance How far the player can move
      * @return A boolean describing whether the player moved or not
      */
-    public boolean moveWest(Player p, int distance) {
+    public void moveWest(Player p) {
     	boolean move = true;
 		int x = p.getLocation().x;
 		int y = p.getLocation().y;
-		for(int i = 1; i<= distance; i++) {
-			//check if the location is accessable, and then if the room entering is correct
-			if(!board.getLocation(x, y - i).getAccess()) {
-				move = false;
-			}
-			if(!enterRoom(p, "W") || !exitRoom(p, "W")) {
-				move = false;
-			}
+		//check if the location is accessable, and then if the room entering is correct
+		if(!board.getLocation(x, y - 1).getAccess()) {
+			move = false;
 		}
+		if(!enterRoom(p, "W") || !exitRoom(p, "W")) {
+			move = false;
+		}
+
 		if(move) {
-			p.setLocation(board.getLocation(x, y - distance));
-			board.getLocation(x, y).player.remove(p);
-			board.getLocation(x, y).person.remove(p.getPerson());
-			board.getLocation(x, y - distance).player.add(p);
-			board.getLocation(x, y - distance).person.add(p.getPerson());
-			p.getPerson().setLocation(board.getLocation(x, y - distance));
+			p.setLocation(board.getLocation(x, y - 1));
+			//remove person and player from location
+			board.getLocation(x, y).getPlayers().remove(p);
+			board.getLocation(x, y).getPersons().remove(p.getPerson());
+			//add person and player to new location
+			board.getLocation(x, y - 1).getPlayers().add(p);
+			board.getLocation(x, y - 1).getPersons().add(p.getPerson());
+			//move the person to the new position
+			p.getPerson().setLocation(board.getLocation(x, y - 1));
+			p.setMovement(p.getMovement() - 1);
 		}
-		return move;
 	}
     /**
      * Checks whether a player is entering a room, and if so whether they are allowed too ( are they at the door)
@@ -260,29 +272,29 @@ public class Game {
     	if(direction == "N") {
     		if(p.getLocation().getRoom() == null && board.getLocation(x-1, y).getRoom() != null) {
     			//checks whether we are in the room and the new location isnt
-    			if(!board.getLocation(x-1, y).getRoom().getEntrys().contains(p.getLocation())) {
-    				//checks whether we are at a door
+    			if(!board.getLocation(x-1, y).getIsDoor()) {
+    				//checks whether we are heading into a door
     				return false;
     			}
     		}
     	}
         if(direction == "S") {
         	if(p.getLocation().getRoom() == null && board.getLocation(x+1, y).getRoom() != null) {
-    			if(!board.getLocation(x+1, y).getRoom().getEntrys().contains(p.getLocation())) {
+    			if(!board.getLocation(x+1, y).getIsDoor()) {
     				return false;
     			}
     		}
     	}
         if(direction == "E") {
         	if(p.getLocation().getRoom() == null && board.getLocation(x, y +1).getRoom() != null) {
-    			if(!board.getLocation(x, y+1).getRoom().getEntrys().contains(p.getLocation())) {
+    			if(!board.getLocation(x, y+1).getIsDoor()) {
     				return false;
     			}
     		}
         }
         if(direction == "W") {
         	if(p.getLocation().getRoom() == null && board.getLocation(x, y -1).getRoom() != null) {
-    			if(!board.getLocation(x, y-1).getRoom().getEntrys().contains(p.getLocation())) {
+    			if(!board.getLocation(x, y-1).getIsDoor()) {
     				return false;
     			}
     		}
@@ -303,29 +315,29 @@ public class Game {
     	if(direction == "N") {
     		if(p.getLocation().getRoom() != null && board.getLocation(x-1, y).getRoom() == null) {
     			//checks whether we are in a room and the location in front isnt
-    			if(!p.getLocation().getRoom().getEntrys().contains(board.getLocation(x-1, y))) {
-    				//checks whther the location we are heading too is a door
+    			if(!p.getLocation().getIsDoor()) {
+    				//checks whther the location we are on is a door
     				return false;
     			}
     		}
     	}
         if(direction == "S") {
         	if(p.getLocation().getRoom() != null && board.getLocation(x+1, y).getRoom() == null) {
-    			if(!p.getLocation().getRoom().getEntrys().contains(board.getLocation(x+1, y))) {
+    			if(!p.getLocation().getIsDoor()) {
     				return false;
     			}
     		}
     	}
         if(direction == "E") {
         	if(p.getLocation().getRoom() != null && board.getLocation(x, y+1).getRoom() == null) {
-    			if(!p.getLocation().getRoom().getEntrys().contains(board.getLocation(x, y+1))) {
+    			if(!p.getLocation().getIsDoor()) {
     				return false;
     			}
     		}
         }
         if(direction == "W") {
         	if(p.getLocation().getRoom() != null && board.getLocation(x, y-1).getRoom() == null) {
-    			if(!p.getLocation().getRoom().getEntrys().contains(board.getLocation(x, y-1))) {
+    			if(!p.getLocation().getIsDoor()) {
     				return false;
     			}
     		}
@@ -347,24 +359,7 @@ public class Game {
     	allweapons.remove(murderinfo[1]);
     	allpersons.remove(murderinfo[2]);
     }
-
-    /**
-     * Creates all of our players, but automatically selecting a character for them to be. Moves them into our games player array
-     */
-    public void createPlayers() {
-    	//creates as many players as required
-    	players = new ArrayList<Player>();
-    	int count = 0;
-    	while(count < 2 || count > 6) {
-    	  //will run until they pick a corect number of players
-    	  System.out.println("How many players would you like? (between 2-6)");
-    	  count = input.nextInt();
-    	}
-    	for(int i = 0; i<count; i++) {
-    		//automatically sets players to characters
-    		players.add(new Player(people.get(i)));
-    	}
-    }
+    
     /**
      * Randomly doles out all of the rooms, weapons and persons to the players knowledge pools. In our version we don't actually have card objects, but instead use sets
      * to hold the knowledge each player has about the murder
@@ -406,258 +401,18 @@ public class Game {
      * Randomly places the weapons between the rooms, putting them in the top left corner
      * @param game The current game being played
      */
-    public void placeWeapons(Game game) {
+    public void placeWeapons() {
     	Random rand = new Random();
-    	for(Weapon w : game.weapons) {
+    	for(Weapon w : weapons) {
     		while(w.getLocation() == null) {
     			Room possibleroom = rooms.get(rand.nextInt(7));
     			if(possibleroom.getWeapons().isEmpty()) {
     				possibleroom.getWeapons().add(w);
-    				w.location = possibleroom.entrys.get(0);
+    				w.location = possibleroom.getEntrys().get(0);
     			}
     		}
     	}
     }
-    /**
-     * Prints all the information a player has. Allows the player to think before making suggestions/accusations
-     * @param p The current player
-     */
-    public void printInfo(Player p) {
-    	System.out.print("Rooms : ");
-    	for(Room r : p.knownrooms) {
-    		System.out.print(r.name + ", ");
-    	}
-    	System.out.println();
-    	System.out.print("Weapons : ");
-    	for(Weapon w : p.knownweapons) {
-    		System.out.print(w.name + ", ");
-    	}
-    	System.out.println();
-    	System.out.print("Persons : ");
-    	for(Person a : p.knownpersons) {
-    		System.out.print(a.name + ", ");
-    	}
-    	System.out.println();
-    }
-    /**
-     * Allows the player to actually make the suggestion. Goes through and asks for the names of the different objects they would like to make a suggestion about.
-     * @param game The current game being played
-     * @param p The current player
-     * @return Object array containing the objects they are make a suggestion about
-     */
-    public Object[] discoverSuggestion(Game game, Player p) {
-    	//First we find the suggestion
-    	Room suggestroom = p.getLocation().getRoom();
-    	Weapon suggestweapon = null;
-    	Person suggestperson = null;
-    	//Finding the weapon suggestion
-    	while(suggestweapon == null) {
-    	   System.out.println("Which weapon would you like to check?");
-    	   String wep = game.input.next();
-    	   for(Weapon w : game.weapons) {
-    		   if(w.getName().equals(wep) || w.getName().toLowerCase().equals(wep)) {
-    			   suggestweapon = w;
-    			   //we also must move the weapon into the room
-    			   suggestroom.entrys.get(0).weapon.add(suggestweapon);
-    		   }
-    	   }
-    	}
-    	//Finding the person suggestion
-    	while(suggestperson == null) {
-     	   System.out.println("Which person would you like to check?");
-     	   String person = game.input.nextLine();
-     	   for(Person a : game.people) {
-     		   if(a.getName().equals(person) || a.getName().toLowerCase().equals(person)) {
-     			   suggestperson = a;
-     			   suggestroom.entrys.get(0).person.add(a);
-     			   a.location = suggestroom.entrys.get(0);
-     			   for(Player play : game.players) {
-     				   if(play.getPerson().equals(a)) {play.location = suggestroom.entrys.get(0);}
-     			   }
-     		   }
-     	   }
-     	}
-    	Object suggest[] = new Object[3];
-    	suggest[0] = suggestroom;
-    	suggest[1] = suggestweapon;
-    	suggest[2] = suggestperson;
-    	return suggest;
-
-    }
-    /**
-     * Allows players to make accusations. Goes through and asks individually for each object they would
-     * like to be a part of their accusation. Very similar to discoverSuggestion, except it will also ask
-     * for a room
-     * @param game The current game being played
-     * @param p The current player
-     * @return Object array containing the objects they are making the accusation about
-     */
-    public Object[] discoverAccusation(Game game, Player p) {
-    	Room accusationroom = null;
-    	Weapon accusationweapon = null;
-    	Person accusationperson = null;
-    	//Finding the room accusation
-    	while(accusationroom == null) {
-    	   System.out.println("Which room would you like to accuse?");
-    	   String room = game.input.nextLine();
-    	   for(Room r : game.rooms) {
-    		   if(r.getName().equals(room) || r.getName().toLowerCase().equals(room)) {
-    			   accusationroom = r;
-    			   //we also must move the weapon into the room
-    			   accusationroom.entrys.get(0).weapon.add(accusationweapon);
-    		   }
-    	   }
-    	}
-    	//Finding the weapon accuastion
-    	while(accusationweapon == null) {
-    	   System.out.println("Which weapon would you like to accuse?");
-    	   String wep = game.input.next();
-    	   for(Weapon w : game.weapons) {
-    		   if(w.getName().equals(wep)|| w.getName().toLowerCase().equals(wep)) {
-    			   accusationweapon = w;
-    			   //we also must move the weapon into the room
-    			   accusationroom.entrys.get(0).weapon.add(accusationweapon);
-    		   }
-    	   }
-    	}
-    	//Finding the person accustion
-    	while(accusationperson == null) {
-     	   System.out.println("Which person would you like to accuse?");
-     	   String person = game.input.nextLine();
-     	   for(Person a : game.people) {
-     		   if(a.getName().equals(person)|| a.getName().toLowerCase().equals(person)) {
-     			  accusationperson = a;
-     			  accusationroom.entrys.get(0).person.add(a);
-     			   a.location = accusationroom.entrys.get(0);
-     		   }
-     	   }
-     	}
-    	Object accusation[] = new Object[3];
-    	accusation[0] = accusationroom;
-    	accusation[1] = accusationweapon;
-    	accusation[2] = accusationperson;
-    	return accusation;
-
-    }
-    /**
-     * Resolves the current suggestion. Goes through the other players and attempts to find objects match those in the suggestion. If we do, the other player may choose
-     * which piece of information to reveal to the suggesting player.
-     * @param p The current player
-     * @param game The current game being player
-     * @param discover The object array contain the suggestion objects
-     */
-    public void resolveSuggest(Player p, Game game, Object[] discover) {
-    	int playerindex = game.players.indexOf(p);
-    	for(int i = 1; i<game.players.size(); i++) {
-    		int target = (playerindex + 1) % players.size();
-    		Object targetchoices[] = new Object[3];
-    		//finds any matches the player might have to the suggestion
-            if(game.players.get(target).startrooms.contains(discover[0])) {targetchoices[0] = discover[0];}
-            if(game.players.get(target).startweapons.contains(discover[1])) {targetchoices[1] = discover[1];}
-            if(game.players.get(target).startpersons.contains(discover[2])) {targetchoices[2] = discover[2];}
-            if(targetchoices.length != 0) {
-            	int choice;
-            	System.out.println("Player " + (target + 1) + ", please select the index of the option you would like to share");
-            	//cycle through the targetchoices and print real values
-                if(targetchoices[0] != null) {System.out.println("0" + " : " + ((Room) targetchoices[0]).getName());}
-                if(targetchoices[1] != null) {System.out.println("1" + " : " + ((Weapon) targetchoices[1]).getName());}
-                if(targetchoices[2] != null) {System.out.println("2" + " : " + ((Person) targetchoices[2]).getName());}
-                //assuming a correct response from our user
-                choice = Integer.parseInt(game.input.next());
-                //now we add it to our player
-                if(choice == 0) {p.knownrooms.add((Room) targetchoices[0]);}
-                else if(choice == 1) {p.knownweapons.add((Weapon) targetchoices[1]);}
-                else{p.knownpersons.add((Person) targetchoices[2]);
-                //someone responded, so we dont want anyone else to have the chance too
-                return;
-                }
-            }
-    	}
-    	//if we get here, it means no one had a matching card
-    }
-    /**
-     * Decides if the game has won. Compares the accusation array against the murderinfo array and returns a
-     * boolean reflecting the result of the comparison
-     * @param discoveraccu Object array containing the accusation
-     * @param game The current game being played
-     * @return True : the game has been won, False : the accusation was wrong
-     */
-    public boolean resolveAccusation(Object[] discoveraccu, Game game) {
-    	boolean gamewon = true;
-    	for(int i = 0; i<3; i++) {
-    		if(!discoveraccu[i].equals(game.murderinfo[i])) {gamewon = false;}
-    	}
-    	return gamewon;
-    }
-    /**
-     * Runs the game
-     * @param args
-     */
-    public static void main(String[] args) {
-    	   //We run our cludeo game from here
-    	   //First thing to do is prepare all of our objects
-	       Game game = new Game();
-	       //need to add the graphics stuff in here
-	       boolean gamewon = false;
-	       game.winner = null;
-	       int playerindex = 0;
-	       game.initiliseBoard();
-	       game.initiliseWeapons();
-	       game.initilisePersons();
-	       game.createPlayers();
-	       List<Room> allrooms = new ArrayList<Room>();
-	       List<Weapon> allweapons = new ArrayList<Weapon>();
-	       List<Person> allpersons = new ArrayList<Person>();
-	       for(Room r : game.rooms) {
-	    	   allrooms.add(r);
-	       }
-	       for(Weapon w : game.weapons) {
-	    	   allweapons.add(w);
-	       }
-	       for(Person p : game.people) {
-	    	   allpersons.add(p);
-	       }
-	       game.createMurderInfo(allrooms, allweapons, allpersons);
-	       game.giveCards(allrooms, allweapons, allpersons);
-	       game.placeWeapons(game);
-	       //now we can begin the game
-	       System.out.println(game.board.drawBoard());
-	       while(!gamewon) {
-	    	   //The game loop will keep running until someone wins
-	    	   //makes sure we are rotating through the players
-	    	   int currentplayerindex = (playerindex % game.players.size());
-	    	   Player currentplayer = game.players.get(currentplayerindex);
-	    	   //if the player has already lost, they dont get a turn
-	    	   if(!currentplayer.canplay) {continue;}
-	    	   System.out.println("Curret player : Player " + (currentplayerindex + 1));
-	    	   int steps = game.diceRoll();
-	    	   game.movePlayer(currentplayer, steps, game);
-	    	   //Will need to redraw the board after the moves
-	    	   //Allow players to take a look at the 'cards' they have
-	    	   System.out.println("Would you like to view your known information? (Please type 'yes' if you would like too)");
-	    	   String info = game.input.next();
-	           if(info.equals("yes")) {
-	        	   game.printInfo(currentplayer);
-	           }
-	           System.out.println("Would you like to make a suggestion? (Please type 'yes' if you would like too)");
-	           String suggest = game.input.next();
-	           if(currentplayer.getLocation().getRoom() == null) {System.out.print("Sorry, but you are not in a room\n");}
-	           if(suggest.equals("yes") && currentplayer.getLocation().getRoom() != null) {
-	        	   Object[] discover = game.discoverSuggestion(game, currentplayer);
-	        	   game.resolveSuggest(currentplayer, game, discover);
-	        	   System.out.println(game.board.drawBoard());
-	           }
-	           System.out.println("Would you like to make a accusation? (Please type 'yes' if you would like too)");
-	           String accu = game.input.next();
-	           if(accu.equals("yes")) {
-	        	   Object[] discoveraccu = game.discoverAccusation(game, currentplayer);
-                   gamewon = game.resolveAccusation(discoveraccu, game);
-                   //either the player has won, or they are now not allowed to play
-                   if(gamewon) {game.winner = currentplayer;}
-                   else {currentplayer.canplay = false;}
-	           }
-	    	   playerindex++;
-	       }
-	       System.out.println("Congulations Player " + (game.players.indexOf(game.winner) + 1));
-   }
 }
+ 
+  
