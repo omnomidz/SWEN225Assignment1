@@ -14,7 +14,6 @@ import java.util.Scanner;
  *
  * @author hildrecall and rehanmidh
  *
- * Currently it is pretty broken. Accusation doesn;t really work if they get it wonrg
  */
 public class Game {
 
@@ -22,7 +21,7 @@ public class Game {
 	List<Room> rooms;
 	List<Weapon> weapons = new ArrayList<Weapon>();
 	List<Person> people = new ArrayList<Person>();
-	List<Player> players;
+	List<Player> players = new ArrayList<Player>();
 	//in order : Room - Weapon - Person
 	Object murderinfo[] = new Object[3];
 	Player winner;
@@ -301,15 +300,14 @@ public class Game {
         }
         return true;
     }
-
+    /**
+     * Checks whether a player is exiting a room, and if so whether they are allowed too ( are they at the door)
+     * @param p The current player
+     * @param direction The direction they are heading in
+     * @return True : The player is either allowed to exit the room, or is not exiting a room
+     *         False : The player is trying to exit a room, but is not allowed
+     */
     public boolean exitRoom(Player p, String direction) {
-    	/**
-         * Checks whether a player is exiting a room, and if so whether they are allowed too ( are they at the door)
-         * @param p The current player
-         * @param direction The direction they are heading in
-         * @return True : The player is either allowed to exit the room, or is not exiting a room
-         *         False : The player is trying to exit a room, but is not allowed
-         */
     	int x = p.getLocation().x;
     	int y = p.getLocation().y;
     	if(direction == "N") {
@@ -359,7 +357,7 @@ public class Game {
     	allweapons.remove(murderinfo[1]);
     	allpersons.remove(murderinfo[2]);
     }
-    
+
     /**
      * Randomly doles out all of the rooms, weapons and persons to the players knowledge pools. In our version we don't actually have card objects, but instead use sets
      * to hold the knowledge each player has about the murder
@@ -408,11 +406,40 @@ public class Game {
     			Room possibleroom = rooms.get(rand.nextInt(7));
     			if(possibleroom.getWeapons().isEmpty()) {
     				possibleroom.getWeapons().add(w);
-    				w.location = possibleroom.getEntrys().get(0);
+    				w.setLocation(possibleroom.getEntrys().get(0));
     			}
     		}
     	}
     }
+    /**
+     * Signals the end of a players turn. Will change the current player to the next player.
+     */
+    public void endTurn() {
+      //check if the current player is at the end of the list
+      if(players.indexOf(currentplayer) == (players.size() -1)) {
+    	  currentplayer = players.get(0);
+      }
+      else {currentplayer = players.get(players.indexOf(currentplayer) + 1);}
+    }
+
+    /**
+     * Creates a new player and adds it into our arraylist of players
+     * @param name Name of the player
+     */
+    public void createNewPlayer(String name, Person person) {
+    	Player newplayer = new Player(name, person);
+        players.add(newplayer);
+    }
+
+    /**
+     * A helper method for player creation. Produces a deep clone of the people arraylist in the game
+     */
+    public List<Person> clonePeople() {
+    	List<Person> clone = new ArrayList<Person>();
+    	for(int i = 0; i<people.size(); i++) {
+    		Person newperson = new Person(people.get(0).getName(), people.get(0).getLocation());
+    		clone.add(newperson);
+    	}
+    	return clone;
+    }
 }
- 
-  
