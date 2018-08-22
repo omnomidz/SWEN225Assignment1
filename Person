@@ -13,7 +13,7 @@ public class Person {
   }
 
   public String getName() {return this.name;}
-  public Location getStart() {return this.location;}
+  public Location getLocation() {return this.location;}
   public void setLocation(Location l) {this.location = l;}
 
   public char getInitial() {
