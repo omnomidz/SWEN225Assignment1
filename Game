@@ -37,6 +37,7 @@ public class Game {
 	public Board getBoard() {
 		return board;
 	}
+	
 	/**
 	 * The game object with where the game is run from. It keeps track of all the objects in and on the board, and has a min function where the game is played.
 	 * All non-player object are initilised
@@ -542,3 +543,4 @@ public class Game {
     public void addPerson(Person p) {
     	currentplayer.knownpersons.add(p);
     }
+}
