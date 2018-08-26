@@ -16,10 +16,12 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.SwingConstants;
 
 import java.awt.GridLayout;
@@ -72,7 +74,114 @@ public class GUI extends JFrame {
 		actions.setLayout(new GridLayout(2,1));
 
 		JButton suggestion = new JButton("Suggestion");
+		suggestion.addActionListener(new ActionListener() {
+ 			public void actionPerformed(ActionEvent ev) {
+ 				//if they are not in a room, dont allow them to make a suggestion
+ 				if(game.currentplayer.getLocation().getRoom() == null) {return;}
+ 				//first asks for their suggestion
+ 				//String roomchoices[] = {"Kitchen", "Ballroom", "Conservatory", "Billiard Room", "Library", "Study", "Hall", "Lounge", "Dining Room"};
+ 				//JComboBox<String> suggestionroom = new JComboBox<String>(roomchoices);
+ 				String weaponchoices[] = {"Candlestick", "Dagger", "Lead Pipe", "Revolver", "Rope", "Spanner"};
+ 				JComboBox<String> suggestionweapon = new JComboBox<String>(weaponchoices);
+ 				String peoplechoices[] = {"Miss Scarlet", "Colonel Mustard", "Mrs White", "Mr Green", "Mrs Peacock", "Professor Plum"};
+ 				JComboBox<String> suggestionpeople = new JComboBox<String>(peoplechoices);
+ 				JPanel suggestionchoices = new JPanel();
+ 				//suggestionchoices.add(suggestionroom);
+ 				suggestionchoices.add(suggestionweapon);
+ 				suggestionchoices.add(suggestionpeople);
+ 				//display the options
+ 				JOptionPane.showConfirmDialog(frame,
+						suggestionchoices,
+						"Make your suggestion",
+						JOptionPane.PLAIN_MESSAGE);
+ 				//find the chosen options and give them to game to figure out the rest
+ 				//String suggestroom = (String) suggestionroom.getSelectedItem();
+ 				String suggestweapon = (String) suggestionweapon.getSelectedItem();
+ 				String suggestperson = (String) suggestionpeople.getSelectedItem();
+ 				Player refuter = game.refuteSuggestion(game.currentplayer.getLocation().getRoom().getName(), suggestweapon, suggestperson);
+ 				//if we find someone who can refute, give them the choice of which card to refute with
+ 				//then give that knowledge to the suggesting player
+ 				if(refuter != null) {
+ 					Object options[] = game.giveRefuteOptions(refuter, game.currentplayer.getLocation().getRoom().getName(), suggestweapon, suggestperson);
+ 					//need to make an opbject array with the names, then drag the info from options
+ 					String optionnames[] = new String[options.length];
+ 					for(int i = 0; i<options.length; i++) {
+ 						//all objects have getName so it doesnt matter what we cast them too
+ 						if(options[i] instanceof Room) {
+ 							optionnames[i] = ((Room) options[i]).getName();
+ 						}
+ 						else if(options[i] instanceof Weapon) {
+ 							optionnames[i] = ((Weapon) options[i]).getName();
+ 						}
+ 						else {
+ 							optionnames[i] = ((Person) options[i]).getName();
+ 						}
+ 					}
+ 					
+ 					String choice = (String)JOptionPane.showInputDialog(frame,
+ 						    "Which card would you like to choose?",
+ 						    "Choose",
+ 						    JOptionPane.PLAIN_MESSAGE,
+ 						    null,
+ 						    optionnames,
+ 						    null);
+ 					//discover what their choice was and add it into the players options
+ 					for(int i = 0; i<options.length; i++) {
+ 						if(options[i] instanceof Room) {
+ 							if(choice == ((Room) options[i]).getName()) {game.addRoom((Room) options[i]);}
+ 						}
+ 						else if(options[i] instanceof Weapon) {
+ 							if(choice == ((Weapon) options[i]).getName()) {game.addWeapon((Weapon) options[i]);}
+ 						}
+ 						else {
+ 							if(choice == ((Person) options[i]).getName()) {game.addPerson((Person) options[i]);}
+ 						}
+ 					}
+ 				}
+ 				//otherwise, let the player know that no one could refute
+ 				else {
+ 					JOptionPane.showMessageDialog(frame, "No one could refute your suggestion!");
+ 				}
+ 			}
+ 	    });
+
 		JButton accusation = new JButton("Accusation");
+		accusation.addActionListener(new ActionListener() {
+ 			public void actionPerformed(ActionEvent ev) {
+ 				//first asks for their suggestion
+ 				String roomchoices[] = {"Kitchen", "Ballroom", "Conservatory", "Billiard Room", "Library", "Study", "Hall", "Lounge", "Dining Room"};
+ 				JComboBox<String> accusationroom = new JComboBox<String>(roomchoices);
+ 				String weaponchoices[] = {"Candlestick", "Dagger", "Lead Pipe", "Revolver", "Rope", "Spanner"};
+ 				JComboBox<String> accusationweapon = new JComboBox<String>(weaponchoices);
+ 				String peoplechoices[] = {"Miss Scarlet", "Colonel Mustard", "Mrs White", "Mr Green", "Mrs Peacock", "Professor Plum"};
+ 				JComboBox<String> accusationperson = new JComboBox<String>(peoplechoices);
+ 				JPanel suggestionchoices = new JPanel();
+ 				suggestionchoices.add(accusationroom);
+ 				suggestionchoices.add(accusationweapon);
+ 				suggestionchoices.add(accusationperson);
+ 				//display the options
+ 				JOptionPane.showConfirmDialog(frame,
+						suggestionchoices,
+						"Make your accusation",
+						JOptionPane.PLAIN_MESSAGE);
+ 				//find the chosen options and give them to game to figure out the rest
+ 				String suggestroom = (String) accusationroom.getSelectedItem();
+ 				String suggestweapon = (String) accusationweapon.getSelectedItem();
+ 				String suggestpeople = (String) accusationperson.getSelectedItem();
+ 				//compare your accusation to the actual murder info
+ 				boolean refuted = game.refuteAccusation(suggestroom, suggestweapon, suggestpeople);
+ 				if(refuted) {
+ 					JOptionPane.showMessageDialog(frame, "Congratulations " + game.currentplayer.getName() + ", you have won the game!");
+ 					//perhaps add some code to end the game??
+ 				}
+ 				else {
+ 					JOptionPane.showMessageDialog(frame, "Sorry " + game.currentplayer.getName() + ", but that was an incorrect guess");
+ 				    game.currentplayer.setCanPlay(false);
+ 				    //change to the next player if they get it wrong
+ 				    game.endTurn();
+                }
+ 			}
+ 	    });
 		actions.add(suggestion);
 		actions.add(accusation);
 
@@ -147,10 +256,14 @@ public class GUI extends JFrame {
 
         JPanel rpanel = new JPanel();
 		splitPane.setRightComponent(rpanel);
+		JTextArea rpaneltext = new JTextArea();
+		rpanel.add(rpaneltext);
 
 		JPanel lpanel = new JPanel();
 		splitPane.setLeftComponent(lpanel);
 		splitPane.setDividerLocation(225);
+		JTextArea lpaneltext = new JTextArea();
+		lpanel.add(lpaneltext);
 
 		JPanel drawing = new JPanel();
 		frame.getContentPane().add(drawing, BorderLayout.CENTER);
@@ -255,8 +368,11 @@ public class GUI extends JFrame {
 					}
 					
 				}
-
+				game.giveCards(game.allrooms, game.allweapons, game.allpersons);
+                game.currentplayer = game.players.get(0);
 				//game.redraw();
+                
+                
 			}
 		});
 
@@ -270,8 +386,12 @@ public class GUI extends JFrame {
 
         endturn.addActionListener(new ActionListener() {
      			public void actionPerformed(ActionEvent ev) {
-     				//currently just exits the game
+     				//changes the current player
      				game.endTurn();
+     				//skip through players who dont get a turn
+     				while(!game.currentplayer.getCanPlay()) {
+     					game.endTurn();
+     				}
      			}
      	});
 
