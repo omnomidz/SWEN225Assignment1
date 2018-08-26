@@ -22,6 +22,9 @@ public class Game {
 	List<Weapon> weapons = new ArrayList<Weapon>();
 	List<Person> people = new ArrayList<Person>();
 	List<Player> players = new ArrayList<Player>();
+	List<Room> allrooms = new ArrayList<Room>();
+    List<Weapon> allweapons = new ArrayList<Weapon>();
+    List<Person> allpersons = new ArrayList<Person>();
 	//in order : Room - Weapon - Person
 	Object murderinfo[] = new Object[3];
 	Player winner;
@@ -42,9 +45,6 @@ public class Game {
 		initiliseBoard();
 	    initiliseWeapons();
 	    initilisePersons();
-	    List<Room> allrooms = new ArrayList<Room>();
-	    List<Weapon> allweapons = new ArrayList<Weapon>();
-	    List<Person> allpersons = new ArrayList<Person>();
 	    for(Room r : rooms) {
      	   allrooms.add(r);
         }
@@ -442,4 +442,103 @@ public class Game {
     	}
     	return clone;
     }
-}
+    
+    /**
+     * Takes a players suggestion, and returns the first player that could refute your claim
+     */
+    public Player refuteSuggestion(String room, String weapon, String person) {
+    	Player refutingplayer = null;
+    	//loop through each player starting from the current player
+    	for(int i = 1; i<players.size(); i++) {
+    		int checkingindex = i;
+    		checkingindex += players.indexOf(currentplayer);
+    		System.out.println(players.indexOf(currentplayer));
+    		if(checkingindex >= players.size() - 1) {checkingindex-=players.size() - 1;}
+    		System.out.println(checkingindex);
+    		//loop through each of the players card to find out whether they contain a card that can be used to refute
+    		for(Room r :players.get(checkingindex).knownrooms) {
+    			if(r.getName() == room) {refutingplayer = players.get(checkingindex);}
+    		}
+    		for(Weapon w :players.get(checkingindex).knownweapons) {
+    			if(w.getName() == room) {refutingplayer = players.get(checkingindex);}
+    		}
+    		for(Person p :players.get(checkingindex).knownpersons) {
+    			if(p.getName() == room) {refutingplayer = players.get(checkingindex);}
+    		}
+    		//if we find someone who can refute, we want to break the loop
+    		if(refutingplayer != null) {break;}
+    	}
+    	return refutingplayer;
+    }
+    
+    /**
+     * Returns a object array of all the objects a player could choose to refuse a suggestion with
+     * @param refuter The player refuting
+     * @param room The room they are attempting to refute
+     * @param weapon The weapon they are attempting to refute
+     * @param person The person they are attempting to refute
+     * @return
+     */
+    public Object[] giveRefuteOptions(Player refuter, String room, String weapon, String person) {
+    	Object options[] = new Object[3];
+    	int objectsize = 0;
+    	for(Room r : refuter.knownrooms) {
+			if(r.getName() == room) {
+				options[objectsize] = r;
+				objectsize++;
+			}
+		}
+		for(Weapon w : refuter.knownweapons) {
+			if(w.getName() == weapon) {
+				options[objectsize] = w;
+				objectsize++;	
+			}
+		}
+		for(Person p : refuter.knownpersons) {
+			if(p.getName() == person) {
+				options[objectsize] = p;
+				objectsize++;
+			}
+		}	
+		Object returnoptions[] = new Object[objectsize];
+		//making sure there is no empty space in the array
+		for(int i = 0; i<objectsize; i++) {
+			returnoptions[i] = options[i];
+		}
+		return returnoptions;
+    }
+    /**
+     * Compares a players accusation to the murder information
+     * @param room Accusation room
+     * @param weapon Accusation weapon
+     * @param person Accuastion person
+     * @return boolean describing whether the player won the game
+     */
+    public boolean refuteAccusation(String room, String weapon, String person) {
+    	String murderroom = ((Room) murderinfo[0]).getName();
+    	String murderweapon = ((Weapon) murderinfo[1]).getName();
+    	String murderperson = ((Person) murderinfo[2]).getName();
+    	if(murderroom.equals(room) && murderweapon.equals(weapon) && murderperson.equals(person)) {return true;}
+    	else {return false;}
+    }
+    /**
+     * Adds a room to a players knowledge
+     * @param r Room that they now know
+     */
+    public void addRoom(Room r) {
+    	currentplayer.knownrooms.add(r);
+    }
+    /**
+     * Adds a room to a players knowledge
+     * @param r Room that they now know
+     */
+    public void addWeapon(Weapon w) {
+    	currentplayer.knownweapons.add(w);
+    }
+    /**
+     * Adds a room to a players knowledge
+     * @param r Room that they now know
+     */
+    public void addPerson(Person p) {
+    	currentplayer.knownpersons.add(p);
+    }
