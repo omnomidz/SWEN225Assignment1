@@ -398,6 +398,117 @@ public class GUI extends JFrame {
         //finally set the program to visable
         frame.setVisible(true);
 	}
+	
+	private void redraw(JFrame frame) {
+		JPanel drawing = new JPanel();
+		int x = 25;
+		int y = 24;
+		JPanel[][] board = new JPanel[x][y];    
+		drawing.setLayout(new GridLayout(x,y,1,1));
+
+		for(int m = 0; m < x; m++) {
+		   for(int n = 0; n < y; n++) {
+		      board[m][n] = new JPanel();
+		      drawing.add(board[m][n]);
+		   }
+		}
+		
+		for (int i = 0; i < x; i++) {
+			for (int j = 0; j < y; j++) {
+				char[][] boardChar =  {{'n','n','n','n','n','n','n','n','n','S','n','n','n','n','S','n','n','n','n','n','n','n','n','n'},
+									   {'k','k','k','k','k','k','n','_','_','_','b','b','b','b','_','_','_','n','c','c','c','c','c','c'},
+									   {'k','k','k','k','k','k','_','_','b','b','b','b','b','b','b','b','_','_','c','c','c','c','c','c'},
+									   {'k','k','k','k','k','k','_','_','b','b','b','b','b','b','b','b','_','_','c','c','c','c','c','c'},
+									   {'k','k','k','k','k','k','_','_','b','b','b','b','b','b','b','b','_','_','c','c','c','c','c','c'},
+									   {'k','k','k','k','k','k','_','_','D','b','b','b','b','b','b','D','_','_','D','c','c','c','c','n'},
+									   {'n','k','k','k','k','k','_','_','b','b','b','b','b','b','b','b','_','_','_','_','_','_','_','S'},
+									   {'_','_','_','_','D','_','_','_','b','D','b','b','b','b','D','b','_','_','_','_','_','_','_','n'},
+									   {'n','_','_','_','_','_','_','_','_','_','_','_','_','_','_','_','_','_','i','i','i','i','i','i'},
+									   {'d','d','d','d','d','_','_','_','_','_','_','_','_','_','_','_','_','_','D','i','i','i','i','i'},
+									   {'d','d','d','d','d','d','d','d','_','_','m','m','m','m','m','_','_','_','i','i','i','i','i','i'},
+									   {'d','d','d','d','d','d','d','d','_','_','m','m','m','m','m','_','_','_','i','i','i','i','i','i'},
+									   {'d','d','d','d','d','d','d','D','_','_','m','m','m','m','m','_','_','_','i','i','i','i','i','i'},
+									   {'d','d','d','d','d','d','d','d','_','_','m','m','m','m','m','_','_','_','_','_','_','_','_','n'},
+									   {'d','d','d','d','d','d','d','d','_','_','m','m','m','m','m','_','_','_','l','l','D','l','D','n'},
+									   {'d','d','d','d','d','d','D','d','_','_','m','m','m','m','m','_','_','l','l','l','l','l','l','l'},
+									   {'n','_','_','_','_','_','_','_','_','_','m','m','m','m','m','_','_','D','l','l','l','l','l','l'},
+									   {'S','_','_','_','_','_','_','_','_','_','_','_','_','_','_','_','_','l','l','l','l','l','l','l'},
+									   {'n','_','_','_','_','_','_','_','_','h','h','D','D','h','h','_','_','_','l','l','l','l','l','n'},
+									   {'o','o','o','o','o','o','D','_','_','h','h','h','h','h','h','_','_','_','_','_','_','_','_','S'},
+									   {'o','o','o','o','o','o','o','_','_','h','h','h','h','h','D','_','_','_','_','_','_','_','_','n'},
+									   {'o','o','o','o','o','o','o','_','_','h','h','h','h','h','h','_','_','D','s','s','s','s','s','s'},
+									   {'o','o','o','o','o','o','o','_','_','h','h','h','h','h','h','_','_','s','s','s','s','s','s','s'},
+									   {'o','o','o','o','o','o','o','_','_','h','h','h','h','h','h','_','_','s','s','s','s','s','s','s'},
+									   {'o','o','o','o','o','o','n','S','n','h','h','h','h','h','h','n','_','n','s','s','s','s','s','s'}};
+
+				if (boardChar[i][j] == 'k'|| boardChar[i][j] == 'b'||boardChar[i][j] == 'c'||boardChar[i][j] == 'i'
+						||boardChar[i][j] == 'h'||boardChar[i][j] == 'd'||boardChar[i][j] == 'l'||boardChar[i][j] == 'o'
+						||boardChar[i][j] == 's' ) {
+					ImageIcon icon = new ImageIcon(GUI.class.getResource("/assets/room.png"));
+		            JLabel room = new JLabel(icon);
+		            room.addMouseListener(new MouseAdapter() {
+		            	@Override
+		            	public void mouseClicked(MouseEvent e) {
+		            		onCLick(e);
+		            	}
+		            });
+		            board[i][j].add(room);
+				}
+				else if (boardChar[i][j] == 'n') {
+					board[i][j].add(new JLabel(new ImageIcon(GUI.class.getResource("/assets/border.png"))));
+					
+				}
+				else if (boardChar[i][j] == '_') {
+					
+					ImageIcon icon = new ImageIcon(GUI.class.getResource("/assets/floor.png"));
+		            JLabel corridor = new JLabel(icon);
+		            corridor.addMouseListener(new MouseAdapter() {
+		            	@Override
+		            	public void mouseClicked(MouseEvent e) {
+		            		onCLick(e);
+		            	}
+		            });
+		            board[i][j].add(corridor);
+				}
+				else if (boardChar[i][j] == 'm') {
+					ImageIcon icon = new ImageIcon(GUI.class.getResource("/assets/border.png"));
+		            JLabel center = new JLabel(icon);
+		            center.addMouseListener(new MouseAdapter() {
+		            	@Override
+		            	public void mouseClicked(MouseEvent e) {
+		            		onCLick(e);
+		            	}
+		            });
+		            board[i][j].add(center);
+				}
+				
+				else if (boardChar[i][j] == 'D') {
+					ImageIcon icon = new ImageIcon(GUI.class.getResource("/assets/door.png"));
+		            JLabel door = new JLabel(icon);
+		            door.addMouseListener(new MouseAdapter() {
+		            	@Override
+		            	public void mouseClicked(MouseEvent e) {
+		            		onCLick(e);
+		            	}
+		            });
+		            board[i][j].add(door);
+				}
+				else {
+					ImageIcon icon = new ImageIcon(GUI.class.getResource("/assets/floor.png"));
+		            JLabel floor = new JLabel(icon);
+		            floor.addMouseListener(new MouseAdapter() {
+		            	@Override
+		            	public void mouseClicked(MouseEvent e) {
+		            		onCLick(e);
+		            	}
+		            });
+		            board[i][j].add(floor);
+				}
+			}
+		}
+		
+		frame.getContentPane().add(drawing, BorderLayout.CENTER);
+	}
 
 	public static void main(String[] args) {
 		new GUI();
