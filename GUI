@@ -117,7 +117,7 @@ public class GUI extends JFrame {
  							optionnames[i] = ((Person) options[i]).getName();
  						}
  					}
- 					
+
  					String choice = (String)JOptionPane.showInputDialog(frame,
  						    "Which card would you like to choose?",
  						    "Choose",
@@ -316,7 +316,7 @@ public class GUI extends JFrame {
 				choose.add(green);
 				choose.add(peacock);
 				choose.add(plum);
-				
+
 				//finds out how many players will be playing
 				int choice = (Integer)JOptionPane.showInputDialog(frame,
 					    "Welcome to Cluedo! How many people would like to play?	",
@@ -366,13 +366,13 @@ public class GUI extends JFrame {
 						plum.setVisible(false);
 						game.createNewPlayer(name, personoptions.get(5));
 					}
-					
+
 				}
 				game.giveCards(game.allrooms, game.allweapons, game.allpersons);
                 game.currentplayer = game.players.get(0);
 				//game.redraw();
-                
-                
+
+
 			}
 		});
 
